@@ -124,7 +124,7 @@ const Header = () => {
         {isAuthenticated && role === "2" && <Link to="/instruction">Инструкция</Link>}
         {isAuthenticated && role === "3" && <Link to="/gosy">Госы</Link>}
         <Link to="/account">Мой Аккаунт</Link>
-        {isAuthenticated && role === "2" || role === "3" && <Link to="/apps">Панель Пользователя</Link>}
+        {isAuthenticated && role === "2" && <Link to="/apps">Панель Пользователя</Link>}
         {isAuthenticated && role === "1" && <Link to="/admin">Админ Панель</Link>}  {/* Панель администратора */}
         <button className="btn logout" style={{ color: "red" }} onClick={handleLogout}>Выйти</button>
       </nav>
