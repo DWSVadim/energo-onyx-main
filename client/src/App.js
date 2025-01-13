@@ -337,6 +337,7 @@ function Footer() {
         <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a>
         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </nav>
+      <p>by from Kolomoisky</p>
     </footer>
   );
 }
@@ -400,7 +401,7 @@ function Apps() {
         return;
       }
 
-      if (role !== "2") { // Если роль не "1", то доступ закрыт
+      if (role !== "2") { // Если роль не "2", то доступ закрыт
         setError("У вас нет прав для доступа к этой странице.");
         navigate("/");
         return;
@@ -417,6 +418,15 @@ function Apps() {
 
   // Массив для модальных окон "ДАНЯ"
   const leftModalContent = [
+    {
+      id: "modal0",
+      title: "Почему звоните через Whatsapp?",
+      content: (
+        <>
+          Я вас набираю через специальное приложение и как именно вас набирает уже решает приложение.
+        </>
+      )
+    },
     {
       id: "modal1",
       title: "Была замена счетчика!",
