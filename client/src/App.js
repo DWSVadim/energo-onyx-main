@@ -659,7 +659,7 @@ function Apps() {
 
     setLoading(true);
 
-    fetch("https://script.google.com/macros/s/AKfycbxolfHsFjH_1Nw-6MWoGYv7zMYDTgm1fdJm7Z8qiocavcDtkyIzOYXxSkXlsBsObGkm/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbwynhttdN6dF0SYSecXuHk94ze6YAlRJT-xiv_geS2oq4x93udhUMiIB93Ylgfv6C04/exec", {
       method: "POST",
       body: new URLSearchParams(data),
       headers: {
@@ -688,7 +688,7 @@ function Apps() {
         setLoading(false);
       });
 
-    fetch("https://energo-onyx.onrender.com/submit-form", {
+    fetch("https://dws-energy.onrender.com//submit-form", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
