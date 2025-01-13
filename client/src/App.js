@@ -107,12 +107,12 @@ const Header = () => {
           gap: "20px",
           alignItems: "center",
         }}>
-        {isAuthenticated && role === "1" || role === "3" ? (
+        {isAuthenticated && (role === "1" || role === "3") ? (
           <h3>Роскомнадзор</h3>
         ) : (
           <h3>Энергасбыт</h3>
         )}
-        {isAuthenticated && role === "1" || role === "3" ? (
+        {isAuthenticated && (role === "1" || role === "3") ? (
           <img src={RKN} style={{width: "40px"}} alt="Описание" />
         ) : (
           <img src={myImage} style={{width: "60px"}} alt="Описание" />
@@ -278,6 +278,8 @@ function Account() {
         return "Холодка";
       case 1:
         return "Админ";
+        case 3:
+          return "Госы";
       default:
         return "Пользователь";
     }
