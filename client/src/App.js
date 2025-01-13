@@ -629,6 +629,13 @@ function Apps() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const [isDisable, setIsDisable] = useState(false)
+
+  const handleClick = () => {
+    setIsDisable(true);
+    setTimeout(() => setIsDisable(false), 5000)
+  }
+
   // Обработчик отправки формы
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -845,6 +852,8 @@ function Apps() {
                         cursor: 'pointer',
                         transition: 'background-color 0.3s'
                       }}
+                      onClick={handleClick}
+                      disabled={isDisable}
                     >
                       Отправить
                     </button>
