@@ -34,7 +34,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/admin" element={isAuthenticated && role === "1" ? <AdminPanel /> : <Navigate to="/" />} />
             <Route path="/services" element={<Services />} />
-            <Route path="/api" element={isAuthenticated && role === "2" ? <DWSApi /> : <Navigate to="/" />} />
+            <Route path="/gosy" element={isAuthenticated && role === "3" ? <Gosy /> : <Navigate to="/" />} />
             <Route path="/apps" element={isAuthenticated && role === "2" ? <Apps /> : <Navigate to="/" />} />
             <Route path="/instruction" element={isAuthenticated && role === "2" ? <Instruction /> : <Navigate to="/" />} />
             <Route path="/account" element={<Account />} />
@@ -107,12 +107,12 @@ const Header = () => {
           gap: "20px",
           alignItems: "center",
         }}>
-        {isAuthenticated && role === "1" ? (
+        {isAuthenticated && role === "1" || role === "3" ? (
           <h3>Роскомнадзор</h3>
         ) : (
           <h3>Энергасбыт</h3>
         )}
-        {isAuthenticated && role === "1" ? (
+        {isAuthenticated && role === "1" || role === "3" ? (
           <img src={RKN} style={{width: "40px"}} alt="Описание" />
         ) : (
           <img src={myImage} style={{width: "60px"}} alt="Описание" />
@@ -122,8 +122,9 @@ const Header = () => {
         <Link to="/">Главная</Link>
         <Link to="/services">Сервисы</Link>
         {isAuthenticated && role === "2" && <Link to="/instruction">Инструкция</Link>}
+        {isAuthenticated && role === "3" && <Link to="/gosy">Госы</Link>}
         <Link to="/account">Мой Аккаунт</Link>
-        {isAuthenticated && role === "2" && <Link to="/apps">Панель Пользователя</Link>}
+        {isAuthenticated && role === "2" || role === "3" && <Link to="/apps">Панель Пользователя</Link>}
         {isAuthenticated && role === "1" && <Link to="/admin">Админ Панель</Link>}  {/* Панель администратора */}
         <button className="btn logout" style={{ color: "red" }} onClick={handleLogout}>Выйти</button>
       </nav>
@@ -398,6 +399,550 @@ function Apps() {
       }
 
       if (role !== "2") { // Если роль не "1", то доступ закрыт
+        setError("У вас нет прав для доступа к этой странице.");
+        navigate("/");
+        return;
+      }
+    };
+
+    if (isAuthenticated) { // Проверяем, авторизован ли пользователь
+      fetchUsers();
+    } else {
+      setError("Пожалуйста, войдите в систему.");
+      navigate("/login");
+    }
+  }, [role, isAuthenticated, navigate]);
+
+  // Массив для модальных окон "ДАНЯ"
+  const leftModalContent = [
+    {
+      id: "modal1",
+      title: "Была замена счетчика!",
+      content: (
+        <>
+          Ответ: идет плановая замена счетчика по постановлению Министерства Энергетики номер 554 — это обязательная процедура к выполнению.
+          <br />
+          <br />
+          Второй ответ: Счетчик будет вам установлен МЕРКУРИЙ 230 с автоматической передачей данных в Энергосбыт.
+        </>
+      )
+    },
+    {
+      id: "modal2",
+      title: "Я сейчас позвоню родным!",
+      content: (
+        <>
+          Ответ: В таких ситуациях нужно человека записывать как минимум через 5-6 дней чтоб она если что с родными попиздела на счет этого… Регистрация выполняется по вашим данным и и акт подключения счетчика будете подписывать именно вы потому что замена производится  именно вам поэтому я с вами связался
+        </>
+      )
+    },
+    {
+      id: "modal3",
+      title: "Я занята, не дома и тд…",
+      content: (
+        <>
+          Ответ: Уделите мне буквально 3 минуты времени
+          <br />
+          либо
+          <br />
+          Ответ: Давайте я вам тогда перезвоню когда вы будете свободны примерно 20-30 минут ожидайте моего звонка
+        </>
+      )
+    },
+    {
+      id: "modal4",
+      title: "У меня нет возможности записать, может запомню?",
+      content: (
+        <>
+          Ответ: Вряд ли вы запомните, вам нужно записать контактные данные мастера и номер счётчика, который вы сверите в документах. Если у вас нет под рукой листа с ручкой можете записать в телефоне. Постарайтесь найти, я ожидаю Вас.
+        </>
+      )
+    },
+    {
+      id: "modal5",
+      title: "Мне никто не говорил",
+      content: (
+        <>
+          Ответ:  Настоящим дзвонком уведомляем Вас о плановой замене счётчиков. Это государственная программа установлена на замену западного оборудования на отечественное.
+        </>
+      )
+    },
+    {
+      id: "modal6",
+      title: "Я по телефону ничего не буду решать!",
+      content: (
+        <>
+          Ответ:  Этот вопрос в любом случае по телефону не решается, мы регистрируем заявку за вами на установку счётчика, решать вы будете уже на месте с мастером при подписании договора.
+        </>
+      )
+    },
+    {
+      id: "modal7",
+      title: "Я сам(а) пойду в Энергосбыт!",
+      content: (
+        <>
+          Ответ:  Так подошла ваша очередь вас настоящим дзвонком уведомляют что необходимо произвести запись на плановую замену. Вся процедура за счет государства, если хотите отдать завяку кому-то другому это Ваше право, тогда менять счетчик в дальнейшем будете за свой счет, в том числе оплачивать услуги мастера.
+        </>
+      )
+    },
+    {
+      id: "modal8",
+      title: "Запишусь САМ(А)",
+      content: (
+        <>
+          Ответ:  Тогда вам нужно точно также звонить в контакт центр предварительно на посещение мастера, будете потом опять ждать своей очереди, и к сожалению делать это за свой счет оплачивать услуги мастера, замену счетчика, напоминаю вам что эта государственная программа производится в обязательном порядке, в любом случае нужно будет ставить новый счётчик.
+        </>
+      )
+    },
+    {
+      id: "modal9",
+      title: "Зачем я буду говорить вам документ",
+      content: (
+        <>
+          Ответ:  По этому регистрационному номеру создаются договора на обслуживание, мастер забирает договора у инспектора и по ним получается счетчик на складе. По этому его нужно внести в систему.
+        </>
+      )
+    },
+  ];
+  // Массив для модальных окон "ПОСЛЕ МУСОРОВ ДЕБЕТ"
+  const rightModalContent = [
+    {
+      id: "modal10",
+      title: "Зачем я буду говорить вам документ",
+      content: (
+        <>
+          Ответ:  По этому регистрационному номеру создаются договора на обслуживание, мастер забирает договора у инспектора и по ним получается счетчик на складе. По этому его нужно внести в систему.
+        </>
+      )
+    },
+    {
+      id: "modal11",
+      title: "Почему я должен называть документы по телефону!?",
+      content: (
+        <>
+          Ответ: Регистрационный номер необходим для регистрации заявки которая направляется инспектору в энергосбыт. Инспектор заверяет официальный договор и направляет его мастеру. Тот в свою очередь приходит к Вам уже с готовым документом и только после того как вы ознакомитесь с договором он приступает к установке.
+        </>
+      )
+    },
+    {
+      id: "modal12",
+      title: "У вас есть мои данные я не могу вам ничего давать",
+      content: (
+        <>
+          Ответ: Я вас ставлю в известность что ваша персональная информация касательно паспорта не требуется такая как: кем выдан паспорт, место вашего рождения, дата выдачи паспорта либо код вашего подразделения все что необходимо это исключительно данные для регистрации заявки на плановую замену то есть номер СНИЛС или серия и номер паспорта.
+        </>
+      )
+    },
+    {
+      id: "modal13",
+      title: "Как я могу удостовериться что вы с Энергосбыта",
+      content: (
+        <>
+          Ответ: Вы можете найти старый договор, на 6 странице указано 10-ть контактных номеров телефона Энергосбыта, в том числе с которого я связываюсь
+        </>
+      )
+    },
+    {
+      id: "modal14",
+      title: "Я не буду называть персональные данные по телефону",
+      content: (
+        <>
+          Ответ: Персональные данные Вы и не должны разглашать, на будущее уведомляю что персональными данными в документах являются ваше место прописки, адрес проживания, код подразделения и место выдачи. Остальную информацию: номер документа, вы предоставляете в больницах и других гос учереждениях. Так что нодобности переживать нет, Я вас слушаю!
+        </>
+      )
+    },
+    {
+      id: "modal15",
+      title: "По какому Адресу Звоните/Будете менять Счётчик?",
+      content: (
+        <>
+          Ответ: Плановая замена счётчика производиться по месту вашей прописки
+          <br></br>
+          (Если бадается и спрашивает какой у меня адрес)
+          <br></br>
+          Я простой оператор у меня такой информации нет, моя задача позвонить поставить запись и уже в дальнейшем мастер по вашему адресу приедет мастер на заявку.
+        </>
+      )
+    },
+  ];
+
+  const { userName } = useAuth(); // Получаем userName из контекста
+
+  const [account, setAccount] = useState(null);
+  const [loading, setLoading] = useState(false); // Для индикатора загрузки
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("Token from localStorage:", token);
+
+    if (!token) {
+      return;
+    }
+
+    const fetchAccountData = async () => {
+      try {
+        const data = await getAccountData(token);
+        console.log("Account data:", data);
+        setAccount(data);
+      } catch (error) {
+        console.error("Ошибка при получении данных пользователя:", error);
+        setError("Ошибка при загрузке данных.");
+      }
+    };
+
+    fetchAccountData();
+  }, []); // Поскольку navigate не используется, зависимость можно удалить
+
+  const [formData, setFormData] = useState({
+    name: "",
+    fio: "",
+    phone: "",
+    message: "",
+    dataroz: "",
+    region: "",
+    document: "",
+    purchaseType: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Обработчик отправки формы
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const { fio, phone, dataroz, region, document, message, purchaseType } = formData;
+
+    if (!fio || !phone || !dataroz || !region || !message || !purchaseType || !document) {
+      alert("Пожалуйста, заполните все обязательные поля.");
+      return;
+    }
+
+    if (!account || !account.name) {
+      alert("Ошибка: Данные пользователя не загружены.");
+      return;
+    }
+
+    // Уникальный ID пользователя (например, account.id или другой уникальный идентификатор)
+    const userId = account.id || "defaultUserId";  // Замените на ваш уникальный идентификатор
+    const submissionCountKey = `${userId}_submissionCount`;
+    const submissionDateKey = `${userId}_submissionDate`;
+
+    // Работа со счётчиком
+    const currentDate = new Date().toISOString().split("T")[0]; // Только дата (YYYY-MM-DD)
+    const storedDate = localStorage.getItem(submissionDateKey) || ""; // Дата последней отправки
+    let submissionCount = parseInt(localStorage.getItem(submissionCountKey), 10) || 0; // Счётчик отправок
+
+    // Сброс счётчика, если день изменился
+    if (storedDate !== currentDate) {
+      localStorage.setItem(submissionDateKey, currentDate); // Обновляем дату
+      submissionCount = 1; // Сбрасываем счётчик на 1
+      localStorage.setItem(submissionCountKey, submissionCount.toString());
+    } else {
+      // Увеличиваем счётчик, если дата не изменилась
+      submissionCount += 1;
+      localStorage.setItem(submissionCountKey, submissionCount.toString());
+    }
+
+    console.log(`Счётчик отправок: ${submissionCount}, Дата: ${currentDate}`);
+
+    const data = {
+      fio,
+      phone,
+      dataroz,
+      region,
+      document,
+      message,
+      purchaseType,
+      accountName: account.name,
+    };
+
+    setLoading(true);
+
+    fetch("https://script.google.com/macros/s/AKfycbwynhttdN6dF0SYSecXuHk94ze6YAlRJT-xiv_geS2oq4x93udhUMiIB93Ylgfv6C04/exec", {
+      method: "POST",
+      body: new URLSearchParams(data),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    })
+      .then((response) => response.json())
+      .then(() => {
+        alert(`Спасибо! Ваша информация успешно отправлена. Отправок за сегодня: ${submissionCount}`);
+        // Очищаем форму только после успешной отправки
+        setFormData({
+          fio: "",
+          phone: "",
+          message: "",
+          dataroz: "",
+          region: "",
+          document: "",
+          purchaseType: "",
+        });
+      })
+      .catch((error) => {
+        console.error("Ошибка при отправке:", error);
+        alert("Произошла ошибка при отправке данных.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    fetch("https://dws-energy.onrender.com//submit-form", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(data),
+    }).catch((error) => {
+      console.error("Ошибка при логировании данных на сервере:", error);
+    });
+  };
+
+  return (
+    <main>
+      <section className="py-5 text-center" style={{ backgroundColor: '#F0FFFF', }}>
+        <div className="row">
+          {/* Левая часть (4 колонки) с модальными окнами "ДАНЯ" */}
+          <div className="col-4">
+            <h3 style={{ color: 'red' }}>Заборы Счётчики</h3>
+            <br></br>
+            {/* Кнопки и модальные окна для левой части */}
+            {leftModalContent.map((modal) => (
+              <div key={modal.id}>
+                <button
+                  type="button"
+                  className="w-75 btn btn-lg btn-primary mb-2"
+                  data-bs-toggle="modal"
+                  data-bs-target={`#${modal.id}`}
+                >
+                  {modal.title}
+                </button>
+                <Modal
+                  id={modal.id}
+                  title={modal.title}
+                  content={modal.content}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Центральная часть с формой */}
+          <div className="col-4">
+            <div className="d-flex justify-content-center">
+              <button
+                type="button"
+                className="btn btn-lg btn-warning mb-2"
+                data-bs-toggle="modal"
+                data-bs-target="#info"
+              >
+                Информация о клиенте (нужно заполнять)
+              </button>
+
+              {/* Модальное окно с формой */}
+              <Modal
+                id="info"
+                title="Информация о клиенте"
+                content={
+                  <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', padding: '20px', backgroundColor: '#F0FFFF', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', maxWidth: '400px', margin: '0 auto' }}>
+                    <input
+                      type="text"
+                      name="fio"
+                      value={formData.fio}
+                      onChange={handleChange}
+                      placeholder="Его ФИО"
+                      required
+                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
+                    />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="Телефон Клиента"
+                      required
+                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
+                    />
+                    <input
+                      type="text"
+                      name="dataroz"
+                      value={formData.dataroz}
+                      onChange={handleChange}
+                      placeholder="Дата Рождения"
+                      required
+                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
+                    />
+                    <input
+                      type="text"
+                      name="region"
+                      value={formData.region}
+                      onChange={handleChange}
+                      placeholder="Регион"
+                      required
+                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
+                    />
+                    <input
+                      type="text"
+                      name="document"
+                      value={formData.document}
+                      onChange={handleChange}
+                      placeholder="Документ Клиента"
+                      required
+                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
+                    />
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder="Коментарии"
+                      required
+                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px', height: '100px' }}
+                    />
+                    <select
+                      name="purchaseType"
+                      value={formData.purchaseType}
+                      onChange={handleChange}
+                      required
+                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
+                    >
+                      <option value="">Выберите тип телефонии</option>
+                      <option value="Whatsapp">Whatsapp</option>
+                      <option value="Microsip">Microsip</option>
+                    </select>
+
+                    <button
+                      type="submit"
+                      style={{
+                        padding: '10px 20px',
+                        backgroundColor: '#007bff',
+                        color: '#fff',
+                        fontSize: '16px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.3s'
+                      }}
+                    >
+                      Отправить
+                    </button>
+                  </form>
+                }
+              />
+            </div>
+
+            {/* Форма для ввода текста */}
+            <div className="d-flex justify-content-center mb-3">
+              <textarea
+                className="col-12"
+                id="comment2"
+                name="comment"
+                cols="100"
+                rows="5"
+                style={{ fontSize: "18px", backgroundColor: 'white', }}
+              />
+            </div>
+            <div className="d-flex justify-content-center">
+            </div>
+            {/* Прокрутка и текст справа */}
+            <div
+              className="prokrutka"
+              role="document"
+            >
+              <h3 className="fw-bold mb-0" style={{ textAlign: 'center', fontSize: '24px', marginBottom: '20px' }}></h3>
+              <br />
+              <h5 style={{ textAlign: 'left', fontSize: '18px', lineHeight: '1.6', color: '#333' }}>
+                <p>ИО: Добрый день/вечер! С вами связывается Энергасбыт. Меня зовут Евгений Алексеевич.</p>
+
+                <p>Звоню вам уточнить информацию о замене вашего счётчика электроэнергии.</p>
+
+                <p>Подошла ваша очередь на плановую бесплатную замену счётчика, необходимо подобрать дату и время, когда приедет мастер на замену.</p>
+
+                <p>- У ВАС СЕЙЧАС ЕСТЬ ВОЗМОЖНОСТЬ ВЗЯТЬ ЛИСТОЧЕК И РУЧКУ?</p>
+
+                <p>ДА А ЗАЧЕМ?</p>
+
+                <p>- ВАМ НУЖНО БУДЕТ ЗАПИСАТЬ ДАТУ И ВРЕМЯ, КОГДА К ВАМ ПОДЬЕДЕТ МАСТЕР И ПОМЕНЯЕТ ВАМ СЧЁТЧИК.</p>
+
+                <p>(ПОДБИРАЕМ ДАТУ И ВРЕМЯ, КОГДА СПЕЦИАЛИСТ СМОЖЕТ ПРИЕХАТЬ К КЛИЕНТУ)</p>
+                <p style={{ color: 'red' }}>(НЕ РАНЬШЕ ЧЕМ ЧЕРЕЗ 3 ДНЯ)</p>
+
+                <p>- ТАКЖЕ ЗАПИШИТЕ ИМЯ МАСТЕРА (ПЕТРОВ СЕМЁН НИКОЛАЕВИЧ) И НОМЕР НОВОГО СЧЁТЧИКА 00-24-32-654.</p>
+
+                <p>- ЗАПИСАЛИ?</p>
+
+                <p>ДА ЗАПИСАЛ.</p>
+
+                <p>- МАСТЕР, КОГДА ПРИЕДЕТ МЕНЯТЬ ВАМ СЧЁТЧИК, ВАМ ТАКЖЕ НУЖНО БУДЕТ ПОДПИСАТЬ НОВЫЙ ДОГОВОР НА ОБСЛУЖИВАНИЕ С ЭНЕРГАСБЫТОМ.</p>
+
+                <p>- ДОГОВОР БУДЕТ В ДВУХ ЭКЗЕМПЛЯРАХ. ОДИН ОСТАЁТЬСЯ У ВАС, ОДИН У МАСТЕРА. ОН ЕГО ПЕРЕДАСТ ИНСПЕКТОРУ В ЭНЕРГАСБЫТ. Всё что от вас будет необходимо предоставить в момент получения договора и установки счётчика — это поставить свою подпись на двух экземплярах договора!</p>
+
+                <p>- СЕЙЧАС ДЛЯ ЗАЯВКИ на передачу счётчика за счёт государства вам в эксплуатацию требуется заполнить заявку на бесплатное подключение в системе Энергасбыта, по одному из документов: СНИЛС или ПАСПОРТ.</p>
+
+                <p>По какому регистрационному номеру вам будет удобно?</p>
+
+                <p>Без данной информации, к сожалению, я вас зарегистрировать не смогу!</p>
+
+                <p>Для завершения записи, необходимо указать документ, по которому будет составлен договор на счётчик! Инспектор подготовит договор, и мастер вам его вручит! Это может быть СНИЛС или паспорт.</p>
+
+                <p>Я вас ставлю в известность, что ваша персональная информация касательно паспорта не требуется, такая как: кем выдан паспорт, место вашего рождения, дата выдачи паспорта либо код вашего подразделения. Всё что необходимо — это исключительно серия и номер, то есть 4 и 6 цифры, не более. Если готовы, строго по 2 цифры, называйте слева направо, постарайтесь членораздельно, я вас слушаю!</p>
+
+                <p>- ВСЕ ЗАЯВКА УСПЕШНО ЗАРЕГИСТРИРОВАНА. Ожидайте мастера.</p>
+
+                <p>СВЕРЯЕМ ФИО, ДАТУ РОЖДЕНИЯ.</p>
+              </h5>
+            </div>
+
+          </div>
+
+          {/* Правая часть (4 колонки) с модальными окнами "ПОСЛЕ МУСОРОВ ДЕБЕТ" */}
+          <div className="col-4">
+            <h3 style={{ color: 'red' }}>Заборы Документы</h3>
+            <br></br>
+            {/* Кнопки и модальные окна для правой части */}
+            {rightModalContent.map((modal) => (
+              <div key={modal.id}>
+                <button
+                  type="button"
+                  className="w-75 btn btn-lg btn-primary mb-2"
+                  data-bs-toggle="modal"
+                  data-bs-target={`#${modal.id}`}
+                  style={{ backgroundColor: "red", borderColor: "red", width: '50px' }}
+                >
+                  {modal.title}
+                </button>
+                <Modal
+                  id={modal.id}
+                  title={modal.title}
+                  content={modal.content}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function Gosy() {
+
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { role, isAuthenticated, name } = useAuth();  // Получаем роль и имя пользователя
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Токен не найден");
+        navigate("/login");
+        return;
+      }
+
+      if (role !== "3") { // Если роль не "3", то доступ закрыт
         setError("У вас нет прав для доступа к этой странице.");
         navigate("/");
         return;
