@@ -629,9 +629,12 @@ function Apps() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const [isDisabled, setIsDisabled] = useState(false)
+
   // Обработчик отправки формы
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsDisabled(true);
 
     const { fio, phone, dataroz, region, document, message, purchaseType } = formData;
 
@@ -708,6 +711,7 @@ function Apps() {
       })
       .finally(() => {
         setLoading(false);
+        setIsDisabled(false);
       });
 
     fetch("https://dws-energy.onrender.com//submit-form", {
@@ -833,21 +837,23 @@ function Apps() {
                       <option value="Microsip">Microsip</option>
                     </select>
 
-                    <button
+                    <button 
                       type="submit"
                       style={{
                         padding: '10px 20px',
-                        backgroundColor: '#007bff',
+                        backgroundColor: isDisabled ? '#cccccc' : '#007bff',
                         color: '#fff',
                         fontSize: '16px',
                         border: 'none',
                         borderRadius: '5px',
-                        cursor: 'pointer',
+                        cursor: isDisabled ? 'not-allowed' : 'pointer',
                         transition: 'background-color 0.3s'
                       }}
+                    disabled={isDisabled}
                     >
-                      Отправить
+                      {isDisabled ? "Подождите..." : "Отправить"}
                     </button>
+                    
                   </form>
                 }
               />
