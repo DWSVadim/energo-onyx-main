@@ -10,16 +10,14 @@ const AdminPanel = () => {
     const navigate = useNavigate();
     const { role, isAuthenticated } = useAuth();
 
-    // Получение данных о отправках из localStorage
     const getUserSubmissionData = (userId) => {
-        const submissionCountKey = '${userId}_submissionCount'; // Исправлен синтаксис
-        const submissionDateKey = '${userId}_submissionDate';
-        const submissionCount = parseInt(localStorage.getItem(submissionCountKey), 10) || 0; // Безопасное преобразование
-        const lastSubmissionDate = localStorage.getItem(submissionDateKey) || "—"; // Дефолтное значение
+        const submissionCountKey = `${userId}_submissionCount`;
+        const submissionDateKey = `${userId}_submissionDate`;
+        const submissionCount = parseInt(localStorage.getItem(submissionCountKey), 10) || 0;
+        const lastSubmissionDate = localStorage.getItem(submissionDateKey) || "—";
         return { submissionCount, lastSubmissionDate };
     };
 
-    // Загрузка пользователей и их данных
     const fetchUsers = async () => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -41,13 +39,8 @@ const AdminPanel = () => {
             // Обновляем пользователей с сервера, добавляя данные о отправках
             const usersWithSubmissionData = data.map(user => {
                 const { submissionCount, lastSubmissionDate } = getUserSubmissionData(user.id);
-                return { 
-                    ...user, 
-                    count: submissionCount, // Добавлено поле для отображения
-                    data: lastSubmissionDate // Переименовано для отображения
-                };
+                return { ...user, submissionCount, lastSubmissionDate };
             });
-
             setUsers(usersWithSubmissionData);
 
             // Считаем сумму всех отправок
@@ -69,7 +62,6 @@ const AdminPanel = () => {
         }
     }, [role, isAuthenticated, navigate]);
 
-    // Удаление пользователя
     const handleDeleteUser = async (id) => {
         const token = localStorage.getItem("token");
         if (!token) {
