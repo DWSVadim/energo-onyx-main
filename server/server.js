@@ -125,8 +125,34 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
     console.log("Тип покупки:", purchaseType);
     console.log("Имя пользователя из аккаунта:", accountName);
 
+    // Получаем текущую дату
+    const currentDate = new Date().toISOString().split("T")[0]; // Формат YYYY-MM-DD
+
+    // Получаем ID пользователя из токена
+    const userId = req.user.id;
+
     try {
-        // Вы можете добавить обработку данных, если нужно, но это необязательно
+        // Обновляем или добавляем данные в таблицу Holodka для конкретного пользователя
+        const [result] = await db.query(
+            `
+            INSERT INTO Holodka (id, count, data)
+            VALUES (?, 1, ?)
+            ON DUPLICATE KEY UPDATE
+                count = CASE
+                    WHEN data = ? THEN count + 1
+                    ELSE 1
+                END,
+                data = ?
+            `,
+            [userId, currentDate, currentDate, currentDate]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(500).json({ error: "Ошибка при добавлении данных в базу" });
+        }
+
+        console.log("✅ Данные успешно добавлены в базу данных");
+
         res.status(200).json({ message: "Данные анкеты успешно залогированы" });
     } catch (err) {
         console.error("Ошибка при логировании анкеты:", err);
@@ -140,7 +166,7 @@ app.get("/account", authenticateToken, async (req, res) => {
     console.log("✅ Декодированный токен:", req.user);
 
     try {
-        const [result] = await db.query("SELECT id, name, email, isAdmin FROM Holodka WHERE id = ?", [req.user.id]);
+        const [result] = await db.query("SELECT id, name, email, isAdmin, count, data FROM Holodka WHERE id = ?", [req.user.id]);
 
         if (result.length === 0) {
             return res.status(404).json({ message: "Пользователь не найден" });
@@ -155,7 +181,7 @@ app.get("/account", authenticateToken, async (req, res) => {
 // Получение списка пользователей (только админы)
 app.get("/admin/users", authenticateToken, verifyAdmin, async (req, res) => {
     try {
-        const [result] = await db.query("SELECT id, name, email, isAdmin FROM Holodka");
+        const [result] = await db.query("SELECT id, name, email, isAdmin, count, data FROM Holodka");
         res.status(200).json(result);
     } catch (err) {
         res.status(500).json({ error: "Ошибка сервера" });
