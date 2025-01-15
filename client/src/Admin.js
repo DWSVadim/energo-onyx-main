@@ -44,7 +44,7 @@ const AdminPanel = () => {
             setUsers(usersWithSubmissionData);
 
             // Считаем сумму всех отправок
-            const total = usersWithSubmissionData.reduce((sum, user) => sum + user.submissionCount, 0);
+            const total = usersWithSubmissionData.reduce((sum, user) => sum + user.count, 0);
             setTotalSubmissions(total);
 
         } catch (error) {
