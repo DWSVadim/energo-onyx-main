@@ -392,30 +392,6 @@ function Apps() {
   const navigate = useNavigate();
   const { role, isAuthenticated, name } = useAuth();  // Получаем роль и имя пользователя
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("Токен не найден");
-        navigate("/login");
-        return;
-      }
-
-      if (role !== "2") { // Если роль не "2", то доступ закрыт
-        setError("У вас нет прав для доступа к этой странице.");
-        navigate("/");
-        return;
-      }
-    };
-
-    if (isAuthenticated) { // Проверяем, авторизован ли пользователь
-      fetchUsers();
-    } else {
-      setError("Пожалуйста, войдите в систему.");
-      navigate("/login");
-    }
-  }, [role, isAuthenticated, navigate]);
-
   // Массив для модальных окон "ДАНЯ"
   const leftModalContent = [
     {
