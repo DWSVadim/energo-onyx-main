@@ -674,6 +674,7 @@ function Apps() {
         alert("Произошла ошибка при отправке данных.");
       })
       .finally(() => {
+        alert("Заявка успешно отправленна:" + holod);
         setLoading(false);
         setIsDisabled(false);
       });
