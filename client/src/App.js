@@ -634,27 +634,6 @@ function Apps() {
       return;
     }
 
-    // Уникальный ID пользователя (например, account.id или другой уникальный идентификатор)
-    const userId = account.id || "defaultUserId";  // Замените на ваш уникальный идентификатор
-    const submissionCountKey = `${userId}_submissionCount`;
-    const submissionDateKey = `${userId}_submissionDate`;
-
-    // Работа со счётчиком
-    const currentDate = new Date().toISOString().split("T")[0]; // Только дата (YYYY-MM-DD)
-    const storedDate = localStorage.getItem(submissionDateKey) || ""; // Дата последней отправки
-    let submissionCount = parseInt(localStorage.getItem(submissionCountKey), 10) || 0; // Счётчик отправок
-
-    // Сброс счётчика, если день изменился
-    if (storedDate !== currentDate) {
-      localStorage.setItem(submissionDateKey, currentDate); // Обновляем дату
-      submissionCount = 1; // Сбрасываем счётчик на 1
-      localStorage.setItem(submissionCountKey, submissionCount.toString());
-    } else {
-      // Увеличиваем счётчик, если дата не изменилась
-      submissionCount += 1;
-      localStorage.setItem(submissionCountKey, submissionCount.toString());
-    }
-
     console.log(`Счётчик отправок: ${submissionCount}, Дата: ${currentDate}`);
 
     const data = {
