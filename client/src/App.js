@@ -634,7 +634,6 @@ function Apps() {
       return;
     }
 
-    console.log(`Счётчик отправок: ${submissionCount}, Дата: ${currentDate}`);
 
     const data = {
       holod,
@@ -658,7 +657,6 @@ function Apps() {
     })
       .then((response) => response.json())
       .then(() => {
-        alert(`Спасибо! Ваша информация успешно отправлена. Отправок за сегодня: ${submissionCount}`);
         // Очищаем форму только после успешной отправки
         setFormData({
           holod: "",
