@@ -35,7 +35,7 @@ function App() {
             <Route path="/admin" element={isAuthenticated && role === "1" ? <AdminPanel /> : <Navigate to="/" />} />
             <Route path="/services" element={<Services />} />
             <Route path="/gosy" element={isAuthenticated && role === "3" ? <Gosy /> : <Navigate to="/" />} />
-            <Route path="/apps" element= {<Apps/>} />
+            <Route path="/apps" element={isAuthenticated && role === "2" ? <Apps /> : <Navigate to="/" />} />
             <Route path="/instruction" element={isAuthenticated && role === "2" ? <Instruction /> : <Navigate to="/" />} />
             <Route path="/account" element={<Account />} />
           </Routes>
@@ -124,7 +124,7 @@ const Header = () => {
         {isAuthenticated && role === "2" && <Link to="/instruction">Инструкция</Link>}
         {isAuthenticated && role === "3" && <Link to="/gosy">Госы</Link>}
         <Link to="/account">Мой Аккаунт</Link>
-        <Link to="/apps">Панель Пользователя</Link>
+        {isAuthenticated && role === "2" && <Link to="/apps">Панель Пользователя</Link>}
         {isAuthenticated && role === "1" && <Link to="/admin">Админ Панель</Link>}  {/* Панель администратора */}
         <button className="btn logout" style={{ color: "red" }} onClick={handleLogout}>Выйти</button>
       </nav>
@@ -392,6 +392,30 @@ function Apps() {
   const navigate = useNavigate();
   const { role, isAuthenticated, name } = useAuth();  // Получаем роль и имя пользователя
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Токен не найден");
+        navigate("/login");
+        return;
+      }
+
+      if (role !== "2") { // Если роль не "2", то доступ закрыт
+        setError("У вас нет прав для доступа к этой странице.");
+        navigate("/");
+        return;
+      }
+    };
+
+    if (isAuthenticated) { // Проверяем, авторизован ли пользователь
+      fetchUsers();
+    } else {
+      setError("Пожалуйста, войдите в систему.");
+      navigate("/login");
+    }
+  }, [role, isAuthenticated, navigate]);
+
   // Массив для модальных окон "ДАНЯ"
   const leftModalContent = [
     {
@@ -606,7 +630,7 @@ function Apps() {
   }, []); // Поскольку navigate не используется, зависимость можно удалить
 
   const [formData, setFormData] = useState({
-    holod: "",
+    name: "",
     fio: "",
     phone: "",
     message: "",
@@ -627,16 +651,42 @@ function Apps() {
     e.preventDefault();
     setIsDisabled(true);
 
-    const {holod, fio, phone, dataroz, region, document, message, purchaseType } = formData;
+    const { fio, phone, dataroz, region, document, message, purchaseType } = formData;
 
-    if (!holod || !fio || !phone || !dataroz || !region || !message || !purchaseType || !document) {
+    if (!fio || !phone || !dataroz || !region || !message || !purchaseType || !document) {
       alert("Пожалуйста, заполните все обязательные поля.");
       return;
     }
 
+    if (!account || !account.name) {
+      alert("Ошибка: Данные пользователя не загружены.");
+      return;
+    }
+
+    // Уникальный ID пользователя (например, account.id или другой уникальный идентификатор)
+    const userId = account.id || "defaultUserId";  // Замените на ваш уникальный идентификатор
+    const submissionCountKey = `${userId}_submissionCount`;
+    const submissionDateKey = `${userId}_submissionDate`;
+
+    // Работа со счётчиком
+    const currentDate = new Date().toISOString().split("T")[0]; // Только дата (YYYY-MM-DD)
+    const storedDate = localStorage.getItem(submissionDateKey) || ""; // Дата последней отправки
+    let submissionCount = parseInt(localStorage.getItem(submissionCountKey), 10) || 0; // Счётчик отправок
+
+    // Сброс счётчика, если день изменился
+    if (storedDate !== currentDate) {
+      localStorage.setItem(submissionDateKey, currentDate); // Обновляем дату
+      submissionCount = 1; // Сбрасываем счётчик на 1
+      localStorage.setItem(submissionCountKey, submissionCount.toString());
+    } else {
+      // Увеличиваем счётчик, если дата не изменилась
+      submissionCount += 1;
+      localStorage.setItem(submissionCountKey, submissionCount.toString());
+    }
+
+    console.log(`Счётчик отправок: ${submissionCount}, Дата: ${currentDate}`);
 
     const data = {
-      holod,
       fio,
       phone,
       dataroz,
@@ -644,11 +694,12 @@ function Apps() {
       document,
       message,
       purchaseType,
+      accountName: account.name,
     };
 
     setLoading(true);
 
-    fetch("https://script.google.com/macros/s/AKfycbwjMR1eytpsSCxc9qps94pkR0qpXvfNVuMRprFqo6ynWJj-qCIouK8-6kgN33ZMG4k/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbwynhttdN6dF0SYSecXuHk94ze6YAlRJT-xiv_geS2oq4x93udhUMiIB93Ylgfv6C04/exec", {
       method: "POST",
       body: new URLSearchParams(data),
       headers: {
@@ -657,9 +708,9 @@ function Apps() {
     })
       .then((response) => response.json())
       .then(() => {
+        alert(`Спасибо! Ваша информация успешно отправлена. Отправок за сегодня: ${submissionCount}`);
         // Очищаем форму только после успешной отправки
         setFormData({
-          holod: "",
           fio: "",
           phone: "",
           message: "",
@@ -674,10 +725,20 @@ function Apps() {
         alert("Произошла ошибка при отправке данных.");
       })
       .finally(() => {
-        alert("Заявка успешно отправленна:" + holod);
         setLoading(false);
         setIsDisabled(false);
       });
+
+    fetch("https://dws-energy.onrender.com/submit-form", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(data),
+    }).catch((error) => {
+      console.error("Ошибка при логировании данных на сервере:", error);
+    });
   };
 
   return (
@@ -726,15 +787,6 @@ function Apps() {
                 title="Информация о клиенте"
                 content={
                   <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', padding: '20px', backgroundColor: '#F0FFFF', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', maxWidth: '400px', margin: '0 auto' }}>
-                    <input
-                      type="text"
-                      name="holod"
-                      value={formData.holod}
-                      onChange={handleChange}
-                      placeholder="Кличка Холоднка"
-                      required
-                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
-                    />
                     <input
                       type="text"
                       name="fio"
