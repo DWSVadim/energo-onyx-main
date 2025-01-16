@@ -124,7 +124,7 @@ const Header = () => {
         {isAuthenticated && role === "2" && <Link to="/instruction">Инструкция</Link>}
         {isAuthenticated && role === "3" && <Link to="/gosy">Госы</Link>}
         <Link to="/account">Мой Аккаунт</Link>
-        {isAuthenticated && role === "2" && <Link to="/apps">Панель Пользователя</Link>}
+        <Link to="/apps">Панель Пользователя</Link>
         {isAuthenticated && role === "1" && <Link to="/admin">Админ Панель</Link>}  {/* Панель администратора */}
         <button className="btn logout" style={{ color: "red" }} onClick={handleLogout}>Выйти</button>
       </nav>
@@ -699,7 +699,7 @@ function Apps() {
 
     setLoading(true);
 
-    fetch("https://script.google.com/macros/s/AKfycbwynhttdN6dF0SYSecXuHk94ze6YAlRJT-xiv_geS2oq4x93udhUMiIB93Ylgfv6C04/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbwjMR1eytpsSCxc9qps94pkR0qpXvfNVuMRprFqo6ynWJj-qCIouK8-6kgN33ZMG4k/exec", {
       method: "POST",
       body: new URLSearchParams(data),
       headers: {
@@ -711,6 +711,7 @@ function Apps() {
         alert(`Спасибо! Ваша информация успешно отправлена. Отправок за сегодня: ${submissionCount}`);
         // Очищаем форму только после успешной отправки
         setFormData({
+          holod: "",
           fio: "",
           phone: "",
           message: "",
@@ -728,17 +729,6 @@ function Apps() {
         setLoading(false);
         setIsDisabled(false);
       });
-
-    fetch("https://dws-energy.onrender.com/submit-form", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(data),
-    }).catch((error) => {
-      console.error("Ошибка при логировании данных на сервере:", error);
-    });
   };
 
   return (
@@ -787,6 +777,15 @@ function Apps() {
                 title="Информация о клиенте"
                 content={
                   <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', padding: '20px', backgroundColor: '#F0FFFF', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', maxWidth: '400px', margin: '0 auto' }}>
+                    <input
+                      type="text"
+                      name="holod"
+                      value={formData.holod}
+                      onChange={handleChange}
+                      placeholder="Кличка Холоднка"
+                      required
+                      style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
+                    />
                     <input
                       type="text"
                       name="fio"
