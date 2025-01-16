@@ -606,7 +606,7 @@ function Apps() {
   }, []); // Поскольку navigate не используется, зависимость можно удалить
 
   const [formData, setFormData] = useState({
-    name: "",
+    holod: "",
     fio: "",
     phone: "",
     message: "",
@@ -627,15 +627,10 @@ function Apps() {
     e.preventDefault();
     setIsDisabled(true);
 
-    const { fio, phone, dataroz, region, document, message, purchaseType } = formData;
+    const {holod, fio, phone, dataroz, region, document, message, purchaseType } = formData;
 
-    if (!fio || !phone || !dataroz || !region || !message || !purchaseType || !document) {
+    if (!holod || !fio || !phone || !dataroz || !region || !message || !purchaseType || !document) {
       alert("Пожалуйста, заполните все обязательные поля.");
-      return;
-    }
-
-    if (!account || !account.name) {
-      alert("Ошибка: Данные пользователя не загружены.");
       return;
     }
 
@@ -663,6 +658,7 @@ function Apps() {
     console.log(`Счётчик отправок: ${submissionCount}, Дата: ${currentDate}`);
 
     const data = {
+      holod,
       fio,
       phone,
       dataroz,
@@ -670,7 +666,6 @@ function Apps() {
       document,
       message,
       purchaseType,
-      accountName: account.name,
     };
 
     setLoading(true);
