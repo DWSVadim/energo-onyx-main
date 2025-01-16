@@ -35,7 +35,7 @@ function App() {
             <Route path="/admin" element={isAuthenticated && role === "1" ? <AdminPanel /> : <Navigate to="/" />} />
             <Route path="/services" element={<Services />} />
             <Route path="/gosy" element={isAuthenticated && role === "3" ? <Gosy /> : <Navigate to="/" />} />
-            <Route path="/apps" element={isAuthenticated && role === "2" ? <Apps /> : <Navigate to="/" />} />
+            <Route path="/apps" element= {<Apps/>} />
             <Route path="/instruction" element={isAuthenticated && role === "2" ? <Instruction /> : <Navigate to="/" />} />
             <Route path="/account" element={<Account />} />
           </Routes>
