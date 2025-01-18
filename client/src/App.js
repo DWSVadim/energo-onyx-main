@@ -4,6 +4,7 @@ import "./App.css";
 import Register from "./Register";
 import Login from "./Login";
 import AdminPanel from "./Admin";
+import AdminPanelminus from "./Adminminus";
 import DWSApi from "./adminapp"
 import { getAccountData } from './utils/api'; // Подключение правильного импорта
 import { AuthProvider, useAuth } from "./AuthContext"; // Подключаем контекст
@@ -33,10 +34,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
             <Route path="/admin" element={isAuthenticated && role === "1" ? <AdminPanel /> : <Navigate to="/" />} />
+            <Route path="/adminminus" element={isAuthenticated && role === "2" ? <AdminPanelminus /> : <Navigate to="/" />} />
             <Route path="/services" element={<Services />} />
             <Route path="/gosy" element={isAuthenticated && role === "3" ? <Gosy /> : <Navigate to="/" />} />
-            <Route path="/apps" element={isAuthenticated && role === "2" ? <Apps /> : <Navigate to="/" />} />
-            <Route path="/instruction" element={isAuthenticated && role === "2" ? <Instruction /> : <Navigate to="/" />} />
+            <Route path="/apps" element={isAuthenticated && role === "5" ? <Apps /> : <Navigate to="/" />} />
+            <Route path="/instruction" element={<Instruction />} />
             <Route path="/account" element={<Account />} />
           </Routes>
         </div>
@@ -113,18 +115,19 @@ const Header = () => {
           <h3>Энергасбыт</h3>
         )}
         {isAuthenticated && (role === "1" || role === "3") ? (
-          <img src={RKN} style={{width: "40px"}} alt="Описание" />
+          <img src={RKN} style={{ width: "40px" }} alt="Описание" />
         ) : (
-          <img src={myImage} style={{width: "60px"}} alt="Описание" />
+          <img src={myImage} style={{ width: "60px" }} alt="Описание" />
         )}
       </div>
       <nav>
         <Link to="/">Главная</Link>
         <Link to="/services">Сервисы</Link>
-        {isAuthenticated && role === "2" && <Link to="/instruction">Инструкция</Link>}
+        <Link to="/instruction">Инструкция</Link>
         {isAuthenticated && role === "3" && <Link to="/gosy">Госы</Link>}
         <Link to="/account">Мой Аккаунт</Link>
-        {isAuthenticated && role === "2" && <Link to="/apps">Панель Пользователя</Link>}
+        {isAuthenticated && role === "5" && <Link to="/apps">Панель Пользователя</Link>}
+        {isAuthenticated && role === "2" && <Link to="/adminminus">Проверка передач</Link>}  {/* Проверка передач */}
         {isAuthenticated && role === "1" && <Link to="/admin">Админ Панель</Link>}  {/* Панель администратора */}
         <button className="btn logout" style={{ color: "red" }} onClick={handleLogout}>Выйти</button>
       </nav>
@@ -144,11 +147,11 @@ function Home() {
 
   return (
     <div className="home">
-        {isAuthenticated && role === "1" ? (
-          <h1>Привет в Роскомнадзоре</h1>
-        ) : (
-          <h1>Привет в Энергосбыте</h1>
-        )}
+      {isAuthenticated && role === "1" ? (
+        <h1>Привет в Роскомнадзоре</h1>
+      ) : (
+        <h1>Привет в Энергосбыте</h1>
+      )}
       <p>Your trusted partner in energy management and sustainable solutions.</p>
       <Link to="/services" className="btn">Explore Our Services</Link>
     </div>
@@ -178,36 +181,68 @@ function Services() {
 }
 
 function Instruction() {
+  const { role, isAuthenticated } = useAuth();  // Получаем данные из контекста
+
   const instruction = [
-    { title: "Как правильно входить", 
+    {
+      title: "Как правильно входить",
+      description: "В поле Login вводите почту mamita@gmail.com. В поле Password - вводите пароль который вам дали или который вы поменяли на свой!",
+      image1: login1,
+      image2: login2
+    },
+    {
+      title: "Что делать если выдаёт ошибку Аккаунта",
+      description: "У вас сверху есть Красная кнопка 'Выйти', нажимаете на неё, выходите и заного входите после этого должно быть всё нормально, если выдаёт ошибку или что-то другое пишете в ТГ группу!",
+      image1: exitAccount,
+    }
+  ];
+
+  const instructHol = [
+    {
+      title: "Как правильно входить",
       description: "В поле Login вводите почту holodka*@gmail.com. Вместо * вводите цыфру которую вам дали за вашим номером как на примере 2-го фото, вместо '45' должен быть ваш номер, в поле Password - вводите пароль который вам дали или который вы поменяли на свой!",
       image1: login1,
-      image2: login2 
+      image2: login2
     },
-    { title: "Что делать если выдаёт ошибку Аккаунта", 
+    {
+      title: "Что делать если выдаёт ошибку Аккаунта",
       description: "У вас сверху есть Красная кнопка 'Выйти', нажимаете на неё, выходите и заного входите после этого должно быть всё нормально, если выдаёт ошибку или что-то другое пишете в ТГ группу!",
       image1: exitAccount,
     },
-    { title: "Как правильно делать передачи", 
+    {
+      title: "Как правильно делать передачи",
       description: "У вас есть ваша Панель Пользователя. Нажимаете на 'Информация о клиенте' заполняете, НОМЕР ОБЕЗАТЕЛЬНО ВВОДИТЕ БЕЗ +, нажимаете отправить, если у вас вылазить окошко с текстом который ниже показан, всё нормально работаете дальше, если выдаёт ошибку или что-то другое пишете в ТГ группу!",
       image1: infoForm,
-      image2: formgood 
+      image2: formgood
     },
   ];
+
   return (
     <div className="services">
       <h2>Инструкции!</h2>
       <div className="service-cards">
-        {instruction.map((instructio, index) => (
-          <div key={index} className="card">
-            <h3>{instructio.title}</h3>
-            <img src={instructio.image1} alt={instructio.title} className="card-image" />
-            <h5>{instructio.description}</h5>
-            {instructio.image2 && (
-            <img src={instructio.image2} alt={instructio.title} className="card-image" />
-            )}
-          </div>
-        ))}
+
+        {isAuthenticated && (role === "5" || role === "1" || role === "2" || role === "3" || role === "4") ? (
+            instructHol.map((instructio, index) => (
+              <div key={index} className="card">
+                <h3>{instructio.title}</h3>
+                <img src={instructio.image1} alt={instructio.title} className="card-image" />
+                <h5>{instructio.description}</h5>
+                {instructio.image2 && (
+                  <img src={instructio.image2} alt={instructio.title} className="card-image" />
+                )}
+              </div>
+            ))
+        ) : (
+            instruction.map((instructio, index) => (
+              <div key={index} className="card">
+                <h3>{instructio.title}</h3>
+                <img src={instructio.image1} alt={instructio.title} className="card-image" />
+                <h5>{instructio.description}</h5>
+              </div>
+            ))
+        )}
+
       </div>
     </div>
   );
@@ -274,12 +309,14 @@ function Account() {
 
   const getRoleName = (isAdmin) => {
     switch (isAdmin) {
-      case 2:
+      case 5:
         return "Холодка";
       case 1:
         return "Админ";
-        case 3:
-          return "Госы";
+        case 2:
+          return "Модератор";
+      case 3:
+        return "Госы";
       default:
         return "Пользователь";
     }
@@ -401,7 +438,7 @@ function Apps() {
         return;
       }
 
-      if (role !== "2") { // Если роль не "2", то доступ закрыт
+      if (role !== "5") { // Если роль не "2", то доступ закрыт
         setError("У вас нет прав для доступа к этой странице.");
         navigate("/");
         return;
@@ -529,8 +566,8 @@ function Apps() {
       title: "Я сам схожу  в Энергосбыт сам куплю счетчик!!!",
       content: (
         <>
-          
-          
+
+
           Ответ:  Вам нужно самостоятельно будет покупать счетчик который марки Меркурий 230 БМ-01 по сколько это соотечественный производитель и не подлежит санкциям заказывать с интернета либо искать в соответсвующих магазинах именно этот который не подвергается санкциям, в данный момент его не присутствует в наличии магазинах , только на складах Энергосбыта поскольку была оптовая закупка, исходя из постановления 554, меняют не только вам а всем на территории России, данная процедура в обязательном порядке. Не важно сами вы это будете делать либо же за счет государства но Если вы не успеете заменить до определенного времени к сожалению вас могут отключить от энергоснабжения  потом так как отказываетесь в данный момент на безоплатное подключение за счет государства вам приодеться  искать мастера назначать день время самостоятельно, тратить своё время оплачивать замену и установку счетчика к этому всему нужно найти где-то именно этот счетчик и приобрести его так же за свой счет.
           <br />
           (Я смотрел его нету в Интернете)
@@ -852,7 +889,7 @@ function Apps() {
                       <option value="Microsip">Microsip</option>
                     </select>
 
-                    <button 
+                    <button
                       type="submit"
                       style={{
                         padding: '10px 20px',
@@ -864,11 +901,11 @@ function Apps() {
                         cursor: isDisabled ? 'not-allowed' : 'pointer',
                         transition: 'background-color 0.3s'
                       }}
-                    disabled={isDisabled}
+                      disabled={isDisabled}
                     >
                       {isDisabled ? "Подождите..." : "Отправить"}
                     </button>
-                    
+
                   </form>
                 }
               />
