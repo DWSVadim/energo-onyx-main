@@ -8,6 +8,13 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 10001;
 
+// Логируем переменные окружения для отладки
+console.log("DB_HOST:", process.env.DB_HOST);
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+console.log("DB_NAME:", process.env.DB_NAME);
+console.log("DB_PORT:", process.env.DB_PORT);
+
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
@@ -237,6 +244,30 @@ app.put("/users/:id", authenticateToken, async (req, res) => {
     } catch (err) {
         console.error("Ошибка БД:", err);
         res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+// Обнуление количества отправок для всех пользователей
+app.put("/admin/reset-submissions", authenticateToken, verifyAdmin, async (req, res) => {
+    try {
+        await db.query("UPDATE Holodka SET count = 0");
+        res.status(200).json({ message: "Количество отправок обнулено для всех пользователей." });
+    } catch (err) {
+        console.error("Ошибка при обнулении отправок:", err);
+        res.status(500).json({ error: "Ошибка сервера при обнулении отправок" });
+    }
+});
+
+
+// Установка текущей даты для всех пользователей
+app.put("/admin/set-today", authenticateToken, verifyAdmin, async (req, res) => {
+    const today = new Date().toISOString().split("T")[0]; // Формат YYYY-MM-DD
+    try {
+        await db.query("UPDATE Holodka SET data = ?", [today]);
+        res.status(200).json({ message: "Текущая дата установлена для всех пользователей." });
+    } catch (err) {
+        console.error("Ошибка при установке даты:", err);
+        res.status(500).json({ error: "Ошибка сервера при установке даты" });
     }
 });
 
