@@ -40,6 +40,7 @@ function App() {
             <Route path="/apps" element={isAuthenticated && role === "5" ? <Apps /> : <Navigate to="/" />} />
             <Route path="/instruction" element={<Instruction />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/dopinfo" element={isAuthenticated && role === "5" ? <DopInfo /> : <Navigate to="/" />} />
           </Routes>
         </div>
         <Footer />
@@ -129,6 +130,7 @@ const Header = () => {
         {isAuthenticated && role === "5" && <Link to="/apps">Панель Пользователя</Link>}
         {isAuthenticated && role === "2" && <Link to="/adminminus">Проверка передач</Link>}  {/* Проверка передач */}
         {isAuthenticated && role === "1" && <Link to="/admin">Админ Панель</Link>}  {/* Панель администратора */}
+        {isAuthenticated && role === "5" && <Link to="/dopinfo">Доп Информация</Link>}
         <button className="btn logout" style={{ color: "red" }} onClick={handleLogout}>Выйти</button>
       </nav>
     </header>
@@ -1554,7 +1556,42 @@ function Gosy() {
   );
 }
 
-
+// Страница с услугами
+function DopInfo() {
+  const services = [
+    { title: "Адреса Энергосбыта", description: (
+      <>
+        1. Москва
+        <br></br>
+        2. СБП
+        <br></br>
+        3. Белгород
+      </>
+    )},
+    { title: "Адреса Энергосбыта", description: (
+      <>
+        1. Москва
+        <br></br>
+        2. СБП
+        <br></br>
+        3. Белгород
+      </>
+    )},
+  ];
+  return (
+    <div className="services">
+      <h2>Доп Информация</h2>
+      <div className="service-cards">
+        {services.map((service, index) => (
+          <div key={index} className="card">
+            <h3>{service.title}</h3>
+            <p>{service.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 
 
