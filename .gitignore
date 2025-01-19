@@ -8,6 +8,7 @@ build/
 # Logs
 logs
 *.log
+.env
 
 # Build output
 build
@@ -15,3 +16,4 @@ build
 # Dependency directories
 client/node_modules
 server/node_modules
+client/.env
