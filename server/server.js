@@ -252,6 +252,7 @@ app.put("/admin/reset-submissions", authenticateToken, verifyAdmin, async (req, 
     try {
         await db.query("UPDATE Holodka SET count = 0");
         res.status(200).json({ message: "Количество отправок обнулено для всех пользователей." });
+        console.log("✅ Количество отправок обнулено для всех пользователей.");
     } catch (err) {
         console.error("Ошибка при обнулении отправок:", err);
         res.status(500).json({ error: "Ошибка сервера при обнулении отправок" });
@@ -265,6 +266,7 @@ app.put("/admin/set-today", authenticateToken, verifyAdmin, async (req, res) => 
     try {
         await db.query("UPDATE Holodka SET data = ?", [today]);
         res.status(200).json({ message: "Текущая дата установлена для всех пользователей." });
+        console.log("✅ Текущая дата установлена для всех пользователей.");
     } catch (err) {
         console.error("Ошибка при установке даты:", err);
         res.status(500).json({ error: "Ошибка сервера при установке даты" });
