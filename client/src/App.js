@@ -36,7 +36,6 @@ function App() {
             <Route path="/admin" element={isAuthenticated && role === "1" ? <AdminPanel /> : <Navigate to="/" />} />
             <Route path="/adminminus" element={isAuthenticated && role === "2" ? <AdminPanelminus /> : <Navigate to="/" />} />
             <Route path="/services" element={<Services />} />
-            <Route path="/gosy" element={isAuthenticated && role === "3" ? <Gosy /> : <Navigate to="/" />} />
             <Route path="/apps" element={isAuthenticated && role === "5" ? <Apps /> : <Navigate to="/" />} />
             <Route path="/instruction" element={<Instruction />} />
             <Route path="/account" element={<Account />} />
@@ -125,7 +124,6 @@ const Header = () => {
         <Link to="/">Главная</Link>
         <Link to="/services">Сервисы</Link>
         <Link to="/instruction">Инструкция</Link>
-        {isAuthenticated && role === "3" && <Link to="/gosy">Госы</Link>}
         <Link to="/account">Мой Аккаунт</Link>
         {isAuthenticated && role === "5" && <Link to="/apps">Панель Пользователя</Link>}
         {isAuthenticated && role === "2" && <Link to="/adminminus">Проверка передач</Link>}  {/* Проверка передач */}
@@ -1008,6 +1006,44 @@ function Apps() {
     </main>
   );
 }
+
+// Страница с услугами
+function DopInfo() {
+  const services = [
+    { title: "Адреса Энергосбыта", description: (
+      <>
+        1. Москва
+        <br></br>
+        2. СБП
+        <br></br>
+        3. Белгород
+      </>
+    )},
+    { title: "Адреса Энергосбыта", description: (
+      <>
+        1. Москва
+        <br></br>
+        2. СБП
+        <br></br>
+        3. Белгород
+      </>
+    )},
+  ];
+  return (
+    <div className="services">
+      <h2>Доп Информация</h2>
+      <div className="service-cards">
+        {services.map((service, index) => (
+          <div key={index} className="card">
+            <h3>{service.title}</h3>
+            <p>{service.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 
 
 export default App;
