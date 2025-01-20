@@ -688,30 +688,29 @@ function Apps() {
   // Обработчик отправки формы
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsDisabled(true);
-
+  
     const { fio, phone, dataroz, region, document, message, nameBaza } = formData;
-
+  
     if (!fio || !phone || !dataroz || !region || !message || !nameBaza || !document) {
       alert("Пожалуйста, заполните все обязательные поля.");
       return;
     }
-
+  
     if (!account || !account.name) {
       alert("Ошибка: Данные пользователя не загружены.");
       return;
     }
-
+  
     // Уникальный ID пользователя (например, account.id или другой уникальный идентификатор)
     const userId = account.id || "defaultUserId";  // Замените на ваш уникальный идентификатор
     const submissionCountKey = `${userId}_submissionCount`;
     const submissionDateKey = `${userId}_submissionDate`;
-
+  
     // Работа со счётчиком
     const currentDate = new Date().toISOString().split("T")[0]; // Только дата (YYYY-MM-DD)
     const storedDate = localStorage.getItem(submissionDateKey) || ""; // Дата последней отправки
     let submissionCount = parseInt(localStorage.getItem(submissionCountKey), 10) || 0; // Счётчик отправок
-
+  
     // Сброс счётчика, если день изменился
     if (storedDate !== currentDate) {
       localStorage.setItem(submissionDateKey, currentDate); // Обновляем дату
@@ -722,9 +721,9 @@ function Apps() {
       submissionCount += 1;
       localStorage.setItem(submissionCountKey, submissionCount.toString());
     }
-
+  
     console.log(`Счётчик отправок: ${submissionCount}, Дата: ${currentDate}`);
-
+  
     const data = {
       fio,
       phone,
@@ -735,17 +734,34 @@ function Apps() {
       nameBaza,
       accountName: account.name,
     };
-
+  
     setLoading(true);
-
-    fetch("https://script.google.com/macros/s/AKfycbyh9ohN0yvmxJchuM1Y9mI0zGjhLLTTtIm1eR2RnbUMC6wNT3fOPt2WSdNdH8wCK8AFhA/exec", {
+  
+    // Сначала отправляем данные в БД
+    fetch("https://dws-energy.onrender.com/submit-form", {
       method: "POST",
-      body: new URLSearchParams(data),
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
+      body: JSON.stringify(data),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Ошибка при логировании данных на сервере");
+        }
+        return response.json();
+      })
+      .then(() => {
+        // После успешной отправки в БД, отправляем в Google Script
+        return fetch("https://script.google.com/macros/s/AKfycbyh9ohN0yvmxJchuM1Y9mI0zGjhLLTTtIm1eR2RnbUMC6wNT3fOPt2WSdNdH8wCK8AFhA/exec", {
+          method: "POST",
+          body: new URLSearchParams(data),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        });
+      })
       .then(() => {
         alert(`Спасибо! Ваша информация успешно отправлена. Отправок за сегодня: ${submissionCount}`);
         // Очищаем форму только после успешной отправки
@@ -765,20 +781,8 @@ function Apps() {
       })
       .finally(() => {
         setLoading(false);
-        setIsDisabled(false);
       });
-
-    fetch("https://dws-energy.onrender.com/submit-form", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(data),
-    }).catch((error) => {
-      console.error("Ошибка при логировании данных на сервере:", error);
-    });
-  };
+  };  
 
   return (
     <main>
@@ -1224,7 +1228,7 @@ function Gosy() {
     dataroz: "",
     region: "",
     document: "",
-    purchaseType: "",
+    nameBaza: "",
   });
 
   const handleChange = (e) => {
@@ -1234,9 +1238,9 @@ function Gosy() {
   const handleSubmit = (e) => {
     e.preventDefault();
   
-    const { fio, phone, dataroz, region, document, message, purchaseType } = formData;
+    const { fio, phone, dataroz, region, document, message, nameBaza } = formData;
   
-    if (!fio || !phone || !dataroz || !region || !message || !purchaseType || !document) {
+    if (!fio || !phone || !dataroz || !region || !message || !nameBaza || !document) {
       alert("Пожалуйста, заполните все обязательные поля.");
       return;
     }
@@ -1276,14 +1280,14 @@ function Gosy() {
       region,
       document,
       message,
-      purchaseType,
+      nameBaza,
       accountName: account.name,
     };
   
     setLoading(true);
   
     // Сначала отправляем данные в БД
-    fetch("https://dws-energy.onrender.com//submit-form", {
+    fetch("https://dws-energy.onrender.com/submit-form", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1299,7 +1303,7 @@ function Gosy() {
       })
       .then(() => {
         // После успешной отправки в БД, отправляем в Google Script
-        return fetch("https://script.google.com/macros/s/AKfycbwynhttdN6dF0SYSecXuHk94ze6YAlRJT-xiv_geS2oq4x93udhUMiIB93Ylgfv6C04/exec", {
+        return fetch("https://script.google.com/macros/s/AKfycbyh9ohN0yvmxJchuM1Y9mI0zGjhLLTTtIm1eR2RnbUMC6wNT3fOPt2WSdNdH8wCK8AFhA/exec", {
           method: "POST",
           body: new URLSearchParams(data),
           headers: {
@@ -1317,7 +1321,7 @@ function Gosy() {
           dataroz: "",
           region: "",
           document: "",
-          purchaseType: "",
+          nameBaza: "",
         });
       })
       .catch((error) => {
