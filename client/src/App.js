@@ -676,7 +676,7 @@ function Apps() {
     dataroz: "",
     region: "",
     document: "",
-    purchaseType: "",
+    nameBaza: "",
   });
 
   const handleChange = (e) => {
@@ -690,9 +690,9 @@ function Apps() {
     e.preventDefault();
     setIsDisabled(true);
 
-    const { fio, phone, dataroz, region, document, message, purchaseType } = formData;
+    const { fio, phone, dataroz, region, document, message, nameBaza } = formData;
 
-    if (!fio || !phone || !dataroz || !region || !message || !purchaseType || !document) {
+    if (!fio || !phone || !dataroz || !region || !message || !nameBaza || !document) {
       alert("Пожалуйста, заполните все обязательные поля.");
       return;
     }
@@ -732,13 +732,13 @@ function Apps() {
       region,
       document,
       message,
-      purchaseType,
+      nameBaza,
       accountName: account.name,
     };
 
     setLoading(true);
 
-    fetch("https://script.google.com/macros/s/AKfycbwynhttdN6dF0SYSecXuHk94ze6YAlRJT-xiv_geS2oq4x93udhUMiIB93Ylgfv6C04/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbyd6UQjpQTw3MaHvfdpY571FSvq6z02H2pUm9z7LFxG62oadSg8wa9unC3h5CeSwb2oiw/exec", {
       method: "POST",
       body: new URLSearchParams(data),
       headers: {
@@ -756,7 +756,7 @@ function Apps() {
           dataroz: "",
           region: "",
           document: "",
-          purchaseType: "",
+          nameBaza: "",
         });
       })
       .catch((error) => {
@@ -879,17 +879,15 @@ function Apps() {
                       required
                       style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px', height: '100px' }}
                     />
-                    <select
-                      name="purchaseType"
-                      value={formData.purchaseType}
+                    <input
+                      type="text"
+                      name="nameBaza"
+                      value={formData.nameBaza}
                       onChange={handleChange}
+                      placeholder="Имя Базы"
                       required
                       style={{ padding: '10px', marginBottom: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' }}
-                    >
-                      <option value="">Выберите тип телефонии</option>
-                      <option value="Whatsapp">Whatsapp</option>
-                      <option value="Microsip">Microsip</option>
-                    </select>
+                    />
 
                     <button
                       type="submit"
