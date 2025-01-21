@@ -6,7 +6,7 @@ import Login from "./Login";
 import AdminPanel from "./Admin";
 import AdminPanelminus from "./Adminminus";
 import DWSApi from "./adminapp"
-import { getAccountData } from './utils/api'; // Подключение правильного импорта
+import { getAccountData, getAllUsers } from './utils/api'; // Подключение правильного импорта
 import { AuthProvider, useAuth } from "./AuthContext"; // Подключаем контекст
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -265,8 +265,7 @@ function Account() {
   const [submissionCount, setSubmissionCount] = useState(0);
   const [lastSubmissionDate, setLastSubmissionDate] = useState("—");
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth(); // Получаем статус аутентификации
-
+  const {role, isAuthenticated } = useAuth(); // Получаем статус аутентификации
 
       const fetchUsers = async () => {
           const token = localStorage.getItem("token");
