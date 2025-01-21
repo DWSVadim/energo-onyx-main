@@ -22,7 +22,7 @@ import UploadLeads from "./UploadLeads";
 import AssignLeads from "./AssignLead";
 import MyLeads from "./MyLeads";
 import exitAccount from './exitAccount.jpg'
-import LeadsTable from "./MyLeads";
+import LeadsTable from "./LeadsTable";
 
 
 // Основной компонент приложения
@@ -47,7 +47,7 @@ function App() {
             <Route path="/dopinfo" element={isAuthenticated && role === "5" ? <DopInfo /> : <Navigate to="/" />} />
             <Route path="/upload" element= {isAuthenticated && role === "1" ? <UploadLeads /> : <Navigate to="/" />} />
             <Route path="/assign" element={isAuthenticated && role === "1" ? <AssignLeads /> : <Navigate to="/" />} />
-            <Route path="/my-leads" element={isAuthenticated && role === "1" ? <MyLeads /> : <Navigate to="/" />} />
+            <Route path="/my-leads" element={isAuthenticated && role === "5" ? <MyLeads /> : <Navigate to="/" />} />
             <Route path="/leads" element={isAuthenticated && role === "1" ? <LeadsTable /> : <Navigate to="/" />} />
           </Routes>
         </div>
