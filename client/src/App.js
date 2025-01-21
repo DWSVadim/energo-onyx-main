@@ -259,11 +259,42 @@ function Instruction() {
 
 function Account() {
   const [account, setAccount] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [totalSubmissions, setTotalSubmissions] = useState(0);
   const [error, setError] = useState("");
   const [submissionCount, setSubmissionCount] = useState(0);
   const [lastSubmissionDate, setLastSubmissionDate] = useState("—");
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth(); // Получаем статус аутентификации
+
+
+      const fetchUsers = async () => {
+          const token = localStorage.getItem("token");
+          if (!token) {
+              setError("Токен не найден");
+              navigate("/login");
+              return;
+          }
+  
+          // Проверка роли
+          if (role !== "1") {
+              setError("У вас нет прав для доступа к этой странице.");
+              navigate("/");
+              return;
+          }
+  
+          try {
+              const data = await getAllUsers();
+  
+              // Считаем сумму всех отправок и обновляем пользователей
+              const total = data.reduce((sum, user) => sum + user.count, 0);
+              setUsers(data);
+              setTotalSubmissions(total);
+          } catch (error) {
+              setError("Ошибка подключения к серверу.");
+              console.error("Ошибка при загрузке пользователей:", error);
+          }
+      };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -359,6 +390,7 @@ function Account() {
 
   return (
     <div className="account">
+      <p>Общее количество отправок: <strong>{totalSubmissions}</strong></p>
       <h2>Мой аккаунт</h2>
       <p>Имя: {account.name}</p>
       <p>Email: {account.email}</p>

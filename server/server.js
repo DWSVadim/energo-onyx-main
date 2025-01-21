@@ -275,10 +275,6 @@ app.put("/admin/set-today", authenticateToken, verifyAdmin, async (req, res) => 
     }
 });
 
-// Конфигурация загрузки файлов
-const upload = multer({ dest: "uploads/" });
-
-// Загрузка лидов из Excel
 app.post("/leads/upload", authenticateToken, verifyAdmin, upload.single("file"), async (req, res) => {
     try {
         const file = req.file;
@@ -288,20 +284,27 @@ app.post("/leads/upload", authenticateToken, verifyAdmin, upload.single("file"),
         const sheetName = workbook.SheetNames[0];
         const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-        // Обработка данных с учетом новых колонок
+        // Проверяем, какие столбцы есть в файле
         const leads = data.map((row) => [
-            row["ФИО"], // fio
-            row["Номер"], // phone
+            row["ФИО"] || null, // fio
+            row["Номер"] || null, // phone
             row["Почта"] || null, // email
             row["Дата рождения (MM/DD/YYYY)"] || null, // birthdate
             row["Оператор"] || null, // operator
             row["Регион"] || null, // region
         ]);
 
+        // Удаляем пустые строки (если нет ФИО и номера, строка считается пустой)
+        const filteredLeads = leads.filter((lead) => lead[0] || lead[1]);
+
+        if (filteredLeads.length === 0) {
+            return res.status(400).json({ error: "Файл не содержит данных для загрузки." });
+        }
+
         // Добавление данных в таблицу leads
         const [result] = await db.query(
             "INSERT INTO leads (fio, phone, email, birthdate, operator, region) VALUES ?",
-            [leads]
+            [filteredLeads]
         );
 
         res.status(201).json({ message: "Лиды успешно загружены", inserted: result.affectedRows });
@@ -310,7 +313,6 @@ app.post("/leads/upload", authenticateToken, verifyAdmin, upload.single("file"),
         res.status(500).json({ error: "Ошибка сервера" });
     }
 });
-
 
 // Получение списка лидов
 app.get("/leads", authenticateToken, verifyAdmin, async (req, res) => {
@@ -354,34 +356,7 @@ app.get("/leads/my", authenticateToken, async (req, res) => {
     }
 });
 
-// Обновление статуса лида
-app.put("/leads/:id/status", authenticateToken, async (req, res) => {
-    try {
-        const leadId = req.params.id;
-        const { status } = req.body;
 
-        // Проверка валидности статуса
-        const validStatuses = ["Недозвон", "Слив", "Перезвон", "Взял"];
-        if (!validStatuses.includes(status)) {
-            return res.status(400).json({ error: "Неверный статус" });
-        }
-
-        // Обновление статуса в БД
-        const [result] = await db.query(
-            "UPDATE leads SET status = ? WHERE id = ? AND assigned_to = ?",
-            [status, leadId, req.user.id]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "Лид не найден или не принадлежит пользователю" });
-        }
-
-        res.status(200).json({ message: "Статус успешно обновлен" });
-    } catch (err) {
-        console.error("Ошибка обновления статуса лида:", err);
-        res.status(500).json({ error: "Ошибка сервера" });
-    }
-});
 
 
 // Запуск сервера
