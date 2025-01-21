@@ -28,6 +28,21 @@ import LeadsTable from "./LeadsTable";
 // Основной компонент приложения
 function App() {
   const { role, isAuthenticated, userName } = useAuth();
+  const [totalSubmissions, setTotalSubmissions] = useState(0);
+
+  const fetchUsers = async () => {
+    try {
+      const data = await getAllUsers(); // Получаем пользователей
+      const total = data.reduce((sum, user) => sum + user.count, 0); // Считаем общее количество отправок
+      setTotalSubmissions(total); // Обновляем состояние с общим количеством отправок
+    } catch (error) {
+      console.error("Ошибка при получении данных:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(); // Загружаем пользователей при монтировании компонента
+  }, []);
 
   return (
     <AuthProvider>
@@ -38,12 +53,12 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
-            <Route path="/admin" element={isAuthenticated && role === "1" ? <AdminPanel /> : <Navigate to="/" />} />
+            <Route path="/admin" element={isAuthenticated && role === "1" ? <AdminPanel setTotalSubmissions={setTotalSubmissions}/> : <Navigate to="/" />} />
             <Route path="/adminminus" element={isAuthenticated && role === "2" ? <AdminPanelminus /> : <Navigate to="/" />} />
             <Route path="/services" element={<Services />} />
             <Route path="/apps" element={isAuthenticated && role === "5" ? <Apps /> : <Navigate to="/" />} />
             <Route path="/instruction" element={<Instruction />} />
-            <Route path="/account" element={<Account />} />
+            <Route path="/account" element={<Account totalSubmissions={totalSubmissions}/>} />
             <Route path="/dopinfo" element={isAuthenticated && role === "5" ? <DopInfo /> : <Navigate to="/" />} />
             <Route path="/upload" element= {<UploadLeads />} />
             <Route path="/assign" element={<AssignLeads />} />
@@ -257,7 +272,7 @@ function Instruction() {
   );
 }
 
-function Account() {
+function Account({totalSubmissions}) {
   const [account, setAccount] = useState(null);
   const [users, setUsers] = useState([]);
   const [totalSubmissions, setTotalSubmissions] = useState(0);
@@ -389,7 +404,7 @@ function Account() {
 
   return (
     <div className="account">
-      <p>Общее количество отправок: <strong>{totalSubmissions}</strong></p>
+      <p>Общее количество отправок: <strong>{totalSubmissions}</strong> из <strong>80</strong></p>
       <h2>Мой аккаунт</h2>
       <p>Имя: {account.name}</p>
       <p>Email: {account.email}</p>
