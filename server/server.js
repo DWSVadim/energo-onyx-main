@@ -5,6 +5,7 @@ const mysql = require("mysql2");
 require("dotenv").config();
 const path = require("path");
 const multer = require("multer");
+const upload = multer({ dest: "uploads/" }); // Или используйте другую настройку для хранения
 const XLSX = require("xlsx");
 
 const app = express();
