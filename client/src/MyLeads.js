@@ -8,9 +8,14 @@ const MyLeads = () => {
         const fetchLeads = async () => {
             try {
                 const { data } = await api.get("/leads/my");
-                setLeads(data);
+                if (Array.isArray(data)) {
+                    setLeads(data);
+                } else {
+                    console.error("Ошибка: API вернул не массив", data);
+                    setLeads([]);
+                }
             } catch (err) {
-                console.error(err);
+                console.error("Ошибка при загрузке лидов:", err);
                 alert("Ошибка при загрузке данных");
             }
         };
@@ -43,20 +48,21 @@ const MyLeads = () => {
             }}>
                 <thead>
                     <tr style={{ backgroundColor: "#f4f4f4" }}>
-                        {Object.keys(leads[0] || {}).map((key) => (
-                            <th
-                                key={key}
-                                style={{
-                                    padding: "10px",
-                                    textAlign: "left",
-                                    borderBottom: "2px solid #ddd",
-                                    fontWeight: "bold",
-                                    color: "#555",
-                                }}
-                            >
-                                {key}
-                            </th>
-                        ))}
+                        {leads.length > 0 &&
+                            Object.keys(leads[0]).map((key) => (
+                                <th
+                                    key={key}
+                                    style={{
+                                        padding: "10px",
+                                        textAlign: "left",
+                                        borderBottom: "2px solid #ddd",
+                                        fontWeight: "bold",
+                                        color: "#555",
+                                    }}
+                                >
+                                    {key}
+                                </th>
+                            ))}
                         <th
                             style={{
                                 padding: "10px",
@@ -71,7 +77,7 @@ const MyLeads = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {leads.map((lead, index) => (
+                    {Array.isArray(leads) && leads.map((lead, index) => (
                         <tr
                             key={index}
                             style={{
@@ -81,7 +87,7 @@ const MyLeads = () => {
                             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f1f1f1")}
                             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = index % 2 === 0 ? "#fff" : "#f9f9f9")}
                         >
-                            {Object.values(lead).map((value, idx) => (
+                            {Object.values(lead || {}).map((value, idx) => (
                                 <td
                                     key={idx}
                                     style={{
