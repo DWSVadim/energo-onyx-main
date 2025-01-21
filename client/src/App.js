@@ -18,7 +18,12 @@ import login1 from './login1.jpg'
 import login2 from './login2.jpg'
 import infoForm from './Info.jpg'
 import formgood from './formgood.jpg'
+import UploadLeads from "./UploadLeads";
+import AssignLeads from "./AssignLead";
+import MyLeads from "./MyLeads";
 import exitAccount from './exitAccount.jpg'
+import LeadsTable from "./MyLeads";
+
 
 // Основной компонент приложения
 function App() {
@@ -40,6 +45,10 @@ function App() {
             <Route path="/instruction" element={<Instruction />} />
             <Route path="/account" element={<Account />} />
             <Route path="/dopinfo" element={isAuthenticated && role === "5" ? <DopInfo /> : <Navigate to="/" />} />
+            <Route path="/upload" element= {isAuthenticated && role === "1" ? <UploadLeads /> : <Navigate to="/" />} />
+            <Route path="/assign" element={isAuthenticated && role === "1" ? <AssignLeads /> : <Navigate to="/" />} />
+            <Route path="/my-leads" element={isAuthenticated && role === "1" ? <MyLeads /> : <Navigate to="/" />} />
+            <Route path="/leads" element={isAuthenticated && role === "1" ? <LeadsTable /> : <Navigate to="/" />} />
           </Routes>
         </div>
         <Footer />
