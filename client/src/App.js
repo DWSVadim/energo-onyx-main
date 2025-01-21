@@ -730,6 +730,9 @@ function Apps() {
     }
   
     console.log(`Счётчик отправок: ${submissionCount}, Дата: ${currentDate}`);
+
+    setIsDisabled(true);
+    setLoading(true);
   
     const data = {
       fio,
@@ -787,6 +790,8 @@ function Apps() {
         alert("Произошла ошибка при отправке данных.");
       })
       .finally(() => {
+        setLoading(false);
+        setIsDisabled(false);
         setLoading(false);
       });
   };  
@@ -914,7 +919,7 @@ function Apps() {
                       }}
                       disabled={isDisabled}
                     >
-                      {isDisabled ? "Подождите..." : "Отправить"}
+                      {isDisabled ? "ПОДОЖДИ НЕ ДРОЧИ ТЫ ЭТУ КНОПКУ" : "Отправить"}
                     </button>
 
                   </form>
