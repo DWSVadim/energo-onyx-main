@@ -287,35 +287,32 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
 
 // Получение информации о пользователе
 app.get("/account", authenticateToken, async (req, res) => {
-    console.log("✅ Декодированный токен:", req.user);
-
-    try {
-        // Получаем данные пользователя из таблицы Holodka
-        const [result] = await db.query("SELECT id, name, email, isAdmin, count, data FROM Holodka WHERE id = ?", [req.user.id]);
-
-        if (result.length === 0) {
-            return res.status(404).json({ message: "Пользователь не найден" });
-        }
-
-        // Получаем общий счетчик total_count из таблицы Holodka_Global
-        const [globalResult] = await db.query("SELECT total_count FROM total_submissions LIMIT 1");
-
-        if (globalResult.length === 0) {
-            return res.status(404).json({ message: "Не удалось найти общий счетчик" });
-        }
-
-        // Возвращаем данные пользователя и общий счетчик
-        const response = {
-            ...result[0],
-            total_count: globalResult[0].total_count
-        };
-
-        res.json(response);
-    } catch (err) {
-        res.status(500).json({ error: "Ошибка сервера" });
+    const userId = req.user.id;
+    let totalCountId1 = 0;
+    let totalCountId2 = 0;
+  
+    if (userId >= 1 && userId <= 100) {
+      // Получаем данные для id1
+      const [result] = await db.query("SELECT total_count FROM total_submissions WHERE id = 1");
+      totalCountId1 = result[0]?.total_count || 0;
+    } else if (userId >= 101 && userId <= 200) {
+      // Получаем данные для id2
+      const [result] = await db.query("SELECT total_count FROM total_submissions WHERE id = 2");
+      totalCountId2 = result[0]?.total_count || 0;
     }
-});
-
+  
+    // Возвращаем данные
+    res.json({
+      id: userId,
+      name: req.user.name,
+      email: req.user.email,
+      isAdmin: req.user.isAdmin,
+      count: req.user.count,
+      data: req.user.data,
+      total_count_id1: totalCountId1,
+      total_count_id2: totalCountId2
+    });
+  });
 
 // Получение списка пользователей (только админы)
 app.get("/admin/users", authenticateToken, verifyAdmin, async (req, res) => {
