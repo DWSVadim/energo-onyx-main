@@ -312,15 +312,14 @@ function Account() {
   };
 
   // Функция для обновления общего количества отправок в зависимости от userId
-  const updateTotalSubmissions = (userId) => {
+  const updateTotalSubmissions = (data, userId) => {
     if (userId >= 1 && userId <= 100) {
-      setTotalSubmissions(account.total_count_id1 || 0); // Если userId от 1 до 100, берем total_count_id1
+      setTotalSubmissions(data.total_count || 0); // Получаем total_count для id1 (если userId от 1 до 100)
     } else if (userId >= 101 && userId <= 200) {
-      setTotalSubmissions(account.total_count_id2 || 0); // Если userId от 101 до 200, берем total_count_id2
-    } else {
-      setTotalSubmissions(0); // Для остальных пользователей можно установить 0 или другую логику
+      setTotalSubmissions(data.total_count || 0); // Получаем total_count для id2 (если userId от 101 до 200)
     }
   };
+  
 
   // Функция выхода
   const handleLogout = () => {

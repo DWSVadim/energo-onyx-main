@@ -235,7 +235,7 @@ app.post("/login", async (req, res) => {
 app.post("/submit-form", authenticateToken, async (req, res) => {
     const { fio, phone, dataroz, region, document, message, purchaseType, nameBaza } = req.body;
 
-    // Логирование данных
+    // Логируем данные
     console.log("📋 Получена анкета:");
     console.log("ФИО:", fio);
     console.log("Телефон:", phone);
@@ -246,59 +246,36 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
     console.log("Тип покупки:", purchaseType);
     console.log("Имя пользователя из аккаунта:", nameBaza);
 
-    // Получаем текущую дату
     const currentDate = new Date().toISOString().split("T")[0]; // Формат YYYY-MM-DD
-
-    // Получаем ID пользователя из токена
     const userId = req.user.id;
 
     try {
-        // Обновляем или добавляем данные в таблицу Holodka для конкретного пользователя
+        // Логика для определения, к какому id относится пользователь
+        let targetId;
+        if (userId >= 1 && userId <= 100) {
+            targetId = 1; // Используем id1 для пользователей с id от 1 до 100
+        } else if (userId >= 101 && userId <= 200) {
+            targetId = 2; // Используем id2 для пользователей с id от 101 до 200
+        } else {
+            return res.status(400).json({ error: "Неверный userId" });
+        }
+
+        // Обновляем или добавляем данные в таблицу total_submissions
         const [result] = await db.query(
             `
-            INSERT INTO Holodka (id, count, data)
-            VALUES (?, 1, ?)
+            INSERT INTO total_submissions (id, total_count)
+            VALUES (?, 1)
             ON DUPLICATE KEY UPDATE
-                count = CASE
-                    WHEN data = ? THEN count + 1
-                    ELSE 1
-                END,
-                data = ?;
+                total_count = total_count + 1
             `,
-            [userId, currentDate, currentDate, currentDate]
+            [targetId]
         );
 
-        // Увеличиваем общий счётчик в зависимости от userId
-        let updateQuery;
-        if (userId >= 1 && userId <= 100) {
-            // Для пользователей с id от 1 до 100 увеличиваем id1
-            updateQuery = `
-                INSERT INTO total_submissions (id, total_count)
-                VALUES (1, 1)
-                ON DUPLICATE KEY UPDATE
-                    total_count = total_count + 1;
-            `;
-        } else if (userId >= 101 && userId <= 200) {
-            // Для пользователей с id от 101 до 200 увеличиваем id2
-            updateQuery = `
-                INSERT INTO total_submissions (id, total_count)
-                VALUES (2, 1)
-                ON DUPLICATE KEY UPDATE
-                    total_count = total_count + 1;
-            `;
-        } else {
-            // Для всех остальных, например, если нужно обработать других пользователей
-            return res.status(400).json({ error: "Неизвестный диапазон ID пользователя" });
-        }
-
-        // Выполняем запрос для увеличения соответствующего счётчика
-        await db.query(updateQuery);
-
         if (result.affectedRows === 0) {
-            return res.status(500).json({ error: "Ошибка при добавлении данных в базу" });
+            return res.status(500).json({ error: "Ошибка при обновлении общего счётчика" });
         }
 
-        console.log("✅ Данные успешно добавлены в базу данных");
+        console.log("✅ Общий счётчик успешно обновлён для id", targetId);
 
         res.status(200).json({ message: "Данные анкеты успешно залогированы" });
     } catch (err) {
