@@ -55,7 +55,7 @@ const authenticateToken = (req, res, next) => {
 
 // Middleware для проверки админских прав
 const verifyAdmin = (req, res, next) => {
-    if (req.user.isAdmin !== 1) {
+    if ((req.user.isAdmin !== 1 || req.user.isAdmin !== 2)) {
         return res.status(403).json({ error: "Нет прав администратора" });
     }
     next();
