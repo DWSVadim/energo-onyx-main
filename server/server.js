@@ -233,7 +233,7 @@ app.post("/login", async (req, res) => {
 
 
 app.post("/submit-form", authenticateToken, async (req, res) => {
-    const { fio, phone, dataroz, region, document, message, purchaseType, accountName } = req.body;
+    const { fio, phone, dataroz, region, document, message, purchaseType, nameBaza } = req.body;
 
     // Логирование данных
     console.log("📋 Получена анкета:");
@@ -244,7 +244,7 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
     console.log("Документ:", document);
     console.log("Сообщение:", message);
     console.log("Тип покупки:", purchaseType);
-    console.log("Имя пользователя из аккаунта:", accountName);
+    console.log("Имя пользователя из аккаунта:", nameBaza);
 
     // Получаем текущую дату
     const currentDate = new Date().toISOString().split("T")[0]; // Формат YYYY-MM-DD
