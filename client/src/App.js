@@ -280,7 +280,7 @@ function Account() {
         setAccount(data);
 
         // Обновляем общее количество отправок в зависимости от userId
-        const userId = parseInt(data.id, 10) || "defaultUserId";
+        const userId = data.id || "defaultUserId";
         updateTotalSubmissions(userId);
 
         // Обновление данных счётчика
