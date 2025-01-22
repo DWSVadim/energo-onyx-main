@@ -235,7 +235,7 @@ app.post("/login", async (req, res) => {
 app.post("/submit-form", authenticateToken, async (req, res) => {
     const { fio, phone, dataroz, region, document, message, purchaseType, nameBaza } = req.body;
 
-    // Логируем данные
+    // Логирование данных
     console.log("📋 Получена анкета:");
     console.log("ФИО:", fio);
     console.log("Телефон:", phone);
@@ -246,36 +246,43 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
     console.log("Тип покупки:", purchaseType);
     console.log("Имя пользователя из аккаунта:", nameBaza);
 
+    // Получаем текущую дату
     const currentDate = new Date().toISOString().split("T")[0]; // Формат YYYY-MM-DD
+
+    // Получаем ID пользователя из токена
     const userId = req.user.id;
 
     try {
-        // Логика для определения, к какому id относится пользователь
-        let targetId;
-        if (userId >= 1 && userId <= 100) {
-            targetId = 1; // Используем id1 для пользователей с id от 1 до 100
-        } else if (userId >= 101 && userId <= 200) {
-            targetId = 2; // Используем id2 для пользователей с id от 101 до 200
-        } else {
-            return res.status(400).json({ error: "Неверный userId" });
-        }
-
-        // Обновляем или добавляем данные в таблицу total_submissions
+        // Обновляем или добавляем данные в таблицу Holodka для конкретного пользователя
         const [result] = await db.query(
             `
-            INSERT INTO total_submissions (id, total_count)
-            VALUES (?, 1)
+            INSERT INTO Holodka (id, count, data)
+            VALUES (?, 1, ?)
             ON DUPLICATE KEY UPDATE
-                total_count = total_count + 1
+                count = CASE
+                    WHEN data = ? THEN count + 1
+                    ELSE 1
+                END,
+                data = ?
             `,
-            [targetId]
+            [userId, currentDate, currentDate, currentDate]
         );
 
+        // Обновляем total_count в таблице, независимо от пользователя
+        await db.query(
+            `
+            INSERT INTO total_submissions (id, total_count)
+            VALUES (1, 1)
+            ON DUPLICATE KEY UPDATE
+                total_count = total_count + 1
+            `
+        );        
+
         if (result.affectedRows === 0) {
-            return res.status(500).json({ error: "Ошибка при обновлении общего счётчика" });
+            return res.status(500).json({ error: "Ошибка при добавлении данных в базу" });
         }
 
-        console.log("✅ Общий счётчик успешно обновлён для id", targetId);
+        console.log("✅ Данные успешно добавлены в базу данных");
 
         res.status(200).json({ message: "Данные анкеты успешно залогированы" });
     } catch (err) {
@@ -285,34 +292,38 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
 });
 
 
+
 // Получение информации о пользователе
 app.get("/account", authenticateToken, async (req, res) => {
-    const userId = req.user.id;
-    let totalCountId1 = 0;
-    let totalCountId2 = 0;
-  
-    if (userId >= 1 && userId <= 100) {
-      // Получаем данные для id1
-      const [result] = await db.query("SELECT total_count FROM total_submissions WHERE id = 1");
-      totalCountId1 = result[0]?.total_count || 0;
-    } else if (userId >= 101 && userId <= 200) {
-      // Получаем данные для id2
-      const [result] = await db.query("SELECT total_count FROM total_submissions WHERE id = 2");
-      totalCountId2 = result[0]?.total_count || 0;
+    console.log("✅ Декодированный токен:", req.user);
+
+    try {
+        // Получаем данные пользователя из таблицы Holodka
+        const [result] = await db.query("SELECT id, name, email, isAdmin, count, data FROM Holodka WHERE id = ?", [req.user.id]);
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Пользователь не найден" });
+        }
+
+        // Получаем общий счетчик total_count из таблицы Holodka_Global
+        const [globalResult] = await db.query("SELECT total_count FROM total_submissions LIMIT 1");
+
+        if (globalResult.length === 0) {
+            return res.status(404).json({ message: "Не удалось найти общий счетчик" });
+        }
+
+        // Возвращаем данные пользователя и общий счетчик
+        const response = {
+            ...result[0],
+            total_count: globalResult[0].total_count
+        };
+
+        res.json(response);
+    } catch (err) {
+        res.status(500).json({ error: "Ошибка сервера" });
     }
-  
-    // Возвращаем данные
-    res.json({
-      id: userId,
-      name: req.user.name,
-      email: req.user.email,
-      isAdmin: req.user.isAdmin,
-      count: req.user.count,
-      data: req.user.data,
-      total_count_id1: totalCountId1,
-      total_count_id2: totalCountId2
-    });
-  });
+});
+
 
 // Получение списка пользователей (только админы)
 app.get("/admin/users", authenticateToken, verifyAdmin, async (req, res) => {

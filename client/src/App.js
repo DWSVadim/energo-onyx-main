@@ -264,7 +264,7 @@ function Account() {
   const [totalSubmissions, setTotalSubmissions] = useState(0); // Новое состояние для общего количества
   const navigate = useNavigate();
   const { role, isAuthenticated } = useAuth(); // Получаем статус аутентификации
-
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -279,11 +279,11 @@ function Account() {
         const data = response.data;
         setAccount(data);
 
-        // Обновляем общее количество отправок в зависимости от userId
-        const userId = data.id || "defaultUserId";
-        updateTotalSubmissions(userId);
+        // Обновляем общее количество отправок
+        setTotalSubmissions(data.total_count || 0); // Устанавливаем значение total_count
 
         // Обновление данных счётчика
+        const userId = data.id || "defaultUserId";
         updateSubmissionData(userId);
       } catch (err) {
         console.error("Ошибка при получении данных аккаунта:", err);
@@ -311,21 +311,6 @@ function Account() {
     setLastSubmissionDate(currentDate);
   };
 
-  // Функция для обновления общего количества отправок в зависимости от userId
-  const updateTotalSubmissions = (data, userId) => {
-    if (userId >= 1 && userId <= 100) {
-      // Для пользователей с id от 1 до 100 используем total_count_id1
-      setTotalSubmissions(data.total_count_id1 || 0); // Получаем total_count для id1
-    } else if (userId >= 101 && userId <= 200) {
-      // Для пользователей с id от 101 до 200 используем total_count_id2
-      setTotalSubmissions(data.total_count_id2 || 0); // Получаем total_count для id2
-    } else {
-      // Если userId вне указанных диапазонов, устанавливаем значение 0
-      setTotalSubmissions(0);
-    }
-  };
-  
-  
   // Функция выхода
   const handleLogout = () => {
     localStorage.removeItem("token");
