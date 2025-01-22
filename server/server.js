@@ -263,20 +263,36 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
                     WHEN data = ? THEN count + 1
                     ELSE 1
                 END,
-                data = ?
+                data = ?;
             `,
             [userId, currentDate, currentDate, currentDate]
         );
 
-        // Обновляем total_count в таблице, независимо от пользователя
-        await db.query(
-            `
-            INSERT INTO total_submissions (id, total_count)
-            VALUES (1, 1)
-            ON DUPLICATE KEY UPDATE
-                total_count = total_count + 1
-            `
-        );        
+        // Увеличиваем общий счётчик в зависимости от userId
+        let updateQuery;
+        if (userId >= 1 && userId <= 100) {
+            // Для пользователей с id от 1 до 100 увеличиваем id1
+            updateQuery = `
+                INSERT INTO total_submissions (id, total_count)
+                VALUES (1, 1)
+                ON DUPLICATE KEY UPDATE
+                    total_count = total_count + 1;
+            `;
+        } else if (userId >= 101 && userId <= 200) {
+            // Для пользователей с id от 101 до 200 увеличиваем id2
+            updateQuery = `
+                INSERT INTO total_submissions (id, total_count)
+                VALUES (2, 1)
+                ON DUPLICATE KEY UPDATE
+                    total_count = total_count + 1;
+            `;
+        } else {
+            // Для всех остальных, например, если нужно обработать других пользователей
+            return res.status(400).json({ error: "Неизвестный диапазон ID пользователя" });
+        }
+
+        // Выполняем запрос для увеличения соответствующего счётчика
+        await db.query(updateQuery);
 
         if (result.affectedRows === 0) {
             return res.status(500).json({ error: "Ошибка при добавлении данных в базу" });
@@ -290,7 +306,6 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Ошибка сервера при логировании анкеты" });
     }
 });
-
 
 
 // Получение информации о пользователе
