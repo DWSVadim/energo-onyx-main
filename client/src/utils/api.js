@@ -130,6 +130,4 @@ export const setTodayAPI = async () => {
     }
 };
 
-
-
 export default api;
