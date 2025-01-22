@@ -326,7 +326,6 @@ function Account() {
   };
   
   
-
   // Функция выхода
   const handleLogout = () => {
     localStorage.removeItem("token");
