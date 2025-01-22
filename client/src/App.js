@@ -5,8 +5,7 @@ import Register from "./Register";
 import Login from "./Login";
 import AdminPanel from "./Admin";
 import AdminPanelminus from "./Adminminus";
-import DWSApi from "./adminapp"
-import { getAccountData, getAllUsers } from './utils/api'; // Подключение правильного импорта
+import { getAccountData } from './utils/api'; // Подключение правильного импорта
 import { AuthProvider, useAuth } from "./AuthContext"; // Подключаем контекст
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -24,25 +23,10 @@ import MyLeads from "./MyLeads";
 import exitAccount from './exitAccount.jpg'
 import LeadsTable from "./LeadsTable";
 
-
 // Основной компонент приложения
 function App() {
   const { role, isAuthenticated, userName } = useAuth();
   const [totalSubmissions, setTotalSubmissions] = useState(0);
-
-  const fetchUsers = async () => {
-    try {
-      const data = await getAllUsers(); // Получаем пользователей
-      const total = data.reduce((sum, user) => sum + user.count, 0); // Считаем общее количество отправок
-      setTotalSubmissions(total); // Обновляем состояние с общим количеством отправок
-    } catch (error) {
-      console.error("Ошибка при получении данных:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers(); // Загружаем пользователей при монтировании компонента
-  }, []);
 
   return (
     <AuthProvider>
@@ -66,8 +50,8 @@ function App() {
             <Route path="/leads" element={<LeadsTable />} />
           </Routes>
         </div>
-        <Footer />
-      </Router>
+          <Footer />
+        </Router>
     </AuthProvider>
   );
 }
@@ -272,44 +256,15 @@ function Instruction() {
   );
 }
 
-function Account({totalSubmissions}) {
+function Account() {
   const [account, setAccount] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [totalSubmissions, setTotalSubmissions] = useState(0);
   const [error, setError] = useState("");
   const [submissionCount, setSubmissionCount] = useState(0);
   const [lastSubmissionDate, setLastSubmissionDate] = useState("—");
+  const [totalSubmissions, setTotalSubmissions] = useState(0); // Новое состояние для общего количества
   const navigate = useNavigate();
-  const {role, isAuthenticated } = useAuth(); // Получаем статус аутентификации
-
-      const fetchUsers = async () => {
-          const token = localStorage.getItem("token");
-          if (!token) {
-              setError("Токен не найден");
-              navigate("/login");
-              return;
-          }
+  const { role, isAuthenticated } = useAuth(); // Получаем статус аутентификации
   
-          // Проверка роли
-          if (role !== "1") {
-              setError("У вас нет прав для доступа к этой странице.");
-              navigate("/");
-              return;
-          }
-  
-          try {
-              const data = await getAllUsers();
-  
-              // Считаем сумму всех отправок и обновляем пользователей
-              const total = data.reduce((sum, user) => sum + user.count, 0);
-              setUsers(data);
-              setTotalSubmissions(total);
-          } catch (error) {
-              setError("Ошибка подключения к серверу.");
-              console.error("Ошибка при загрузке пользователей:", error);
-          }
-      };
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -323,6 +278,9 @@ function Account({totalSubmissions}) {
         });
         const data = response.data;
         setAccount(data);
+
+        // Обновляем общее количество отправок
+        setTotalSubmissions(data.total_count || 0); // Устанавливаем значение total_count
 
         // Обновление данных счётчика
         const userId = data.id || "defaultUserId";
@@ -367,8 +325,8 @@ function Account({totalSubmissions}) {
         return "Холодка";
       case 1:
         return "Админ";
-        case 2:
-          return "Модератор";
+      case 2:
+        return "Модератор";
       case 3:
         return "Госы";
       default:
@@ -415,8 +373,6 @@ function Account({totalSubmissions}) {
     </div>
   );
 }
-
-
 
 
 // Компонент Footer
@@ -722,7 +678,7 @@ function Apps() {
   }, []); // Поскольку navigate не используется, зависимость можно удалить
 
   const [formData, setFormData] = useState({
-    name: "",
+    accountName: "",
     fio: "",
     phone: "",
     message: "",
@@ -794,7 +750,7 @@ function Apps() {
     setLoading(true);
   
     // Сначала отправляем данные в БД
-    fetch("https://dws-energy.onrender.com/submit-form", {
+    fetch("https://energo-onyx.onrender.com/submit-form", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -810,7 +766,7 @@ function Apps() {
       })
       .then(() => {
         // После успешной отправки в БД, отправляем в Google Script
-        return fetch("https://script.google.com/macros/s/AKfycbyh9ohN0yvmxJchuM1Y9mI0zGjhLLTTtIm1eR2RnbUMC6wNT3fOPt2WSdNdH8wCK8AFhA/exec", {
+        return fetch("https://script.google.com/macros/s/AKfycbytZJam7gF6xSOk44ZkBRFJEImBdau-sZRt364P9rL0IjZ9jOtGICB_qtfOIJy1lEdgUw/exec", {
           method: "POST",
           body: new URLSearchParams(data),
           headers: {

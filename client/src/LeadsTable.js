@@ -17,7 +17,6 @@ const LeadsTable = () => {
 
         fetchLeads();
     }, []);
-
     return (
         <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
             <h2 style={{ textAlign: "center", color: "#333" }}>Leads</h2>
