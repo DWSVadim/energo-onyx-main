@@ -275,7 +275,7 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
         const [newTableResult] = await db.query(
             
             `
-            INSERT INTO new_table (user_id, fio, phone, dataroz, region, document, message, nameBaza, submission_date)
+            INSERT INTO leads (user_id, fio, phone, dataroz, region, document, message, nameBaza, submission_date)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             `
             ,
