@@ -236,12 +236,6 @@ app.post("/login", async (req, res) => {
 app.post("/submit-form", authenticateToken, async (req, res) => {
     const { fio, phone, dataroz, region, document, message, nameBaza, accountName } = req.body;
 
-    // Получаем текущую дату
-    const currentDate = new Date().toISOString().split("T")[0]; // Формат YYYY-MM-DD
-
-    // Получаем ID пользователя из токена
-    const userId = req.user.id;
-
     // Логирование данных
     console.log("📋 Получена анкета:");
     console.log("ФИО:", fio);
@@ -252,6 +246,12 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
     console.log("Сообщение:", message);
     console.log("База:", nameBaza);
     console.log("Имя пользователя из аккаунта:", accountName);
+
+    // Получаем текущую дату
+    const currentDate = new Date().toISOString().split("T")[0]; // Формат YYYY-MM-DD
+
+    // Получаем ID пользователя из токена
+    const userId = req.user.id;
 
     try {
         // Обновляем или добавляем данные в таблицу Holodka для конкретного пользователя
