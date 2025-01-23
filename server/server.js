@@ -256,6 +256,7 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
     try {
         // Обновляем или добавляем данные в таблицу Holodka для конкретного пользователя
         const [result] = await db.query(
+            
             `
             INSERT INTO Holodka (id, count, data)
             VALUES (?, 1, ?)
@@ -265,25 +266,39 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
                     ELSE 1
                 END,
                 data = ?
-            `,
+                `
+            ,
             [userId, currentDate, currentDate, currentDate]
+        );
+
+        // Сохраняем данные в новую таблицу (например, new_table)
+        const [newTableResult] = await db.query(
+            
+            `
+            INSERT INTO new_table (user_id, fio, phone, dataroz, region, document, message, nameBaza, submission_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `
+            ,
+            [userId, fio, phone, dataroz, region, document, message, nameBaza, currentDate]
         );
 
         // Обновляем total_count в таблице, независимо от пользователя
         await db.query(
-            `
-            INSERT INTO total_submissions (id, total_count)
+            
+            
+            `INSERT INTO total_submissions (id, total_count)
             VALUES (1, 1)
             ON DUPLICATE KEY UPDATE
                 total_count = total_count + 1
             `
-        );        
 
-        if (result.affectedRows === 0) {
+        );
+
+        if (result.affectedRows === 0 || newTableResult.affectedRows === 0) {
             return res.status(500).json({ error: "Ошибка при добавлении данных в базу" });
         }
 
-        console.log("✅ Данные успешно добавлены в базу данных");
+        console.log("✅ Данные успешно добавлены в базу данных и в новую таблицу");
 
         res.status(200).json({ message: "Данные анкеты успешно залогированы" });
     } catch (err) {
@@ -291,7 +306,6 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Ошибка сервера при логировании анкеты" });
     }
 });
-
 
 
 // Получение информации о пользователе
