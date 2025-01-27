@@ -253,7 +253,7 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
     // Получаем ID пользователя из токена
     const userId = req.user.id;
 
-    const currentDate1 = new Date()
+    const currentDate1 = new Date().toISOString().replace('T', ' ');
 
     try {
         // Обновляем или добавляем данные в таблицу Holodka для конкретного пользователя
@@ -281,7 +281,7 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL)
             `
             ,
-            [userId, fio, phone, dataroz, region, document, message, nameBaza, currentDate1]
+            [accountName, fio, phone, dataroz, region, document, message, nameBaza, currentDate1]
         );
 
         // Обновляем total_count в таблице, независимо от пользователя
