@@ -60,10 +60,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DWSAss/energys.git"
+    "url": "git+https://github.com/DWSAss/DWS-energy.git"
   },
   "bugs": {
-    "url": "https://github.com/DWSAss/energys/issues"
+    "url": "https://github.com/DWSAss/DWS-energy/issues"
   },
-  "homepage": "https://github.com/DWSAss/energys#readme"
+  "homepage": "https://github.com/DWSAss/DWS-energy#readme"
 }

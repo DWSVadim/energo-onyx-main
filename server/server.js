@@ -9,7 +9,7 @@ const XLSX = require("xlsx");
 const { use } = require("react");
 
 const app = express();
-const port = process.env.PORT || 10001;
+const port = process.env.PORT || 10000;
 
 app.use(cors({ origin: "*" }));
 app.use(express.json());
