@@ -253,7 +253,10 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
     // Получаем ID пользователя из токена
     const userId = req.user.id;
 
-    const currentDate1 = new Date().toISOString().replace('T', ' ');
+    const currentDate1 = new Date();
+    const options = { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    const moscowTime = new Intl.DateTimeFormat('en-GB', options).format(currentDate1).replace(',', '').replace(/\//g, '-');
+
 
     try {
         // Обновляем или добавляем данные в таблицу Holodka для конкретного пользователя
@@ -281,7 +284,7 @@ app.post("/submit-form", authenticateToken, async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL)
             `
             ,
-            [accountName, fio, phone, dataroz, region, document, message, nameBaza, currentDate1]
+            [accountName, fio, phone, dataroz, region, document, message, nameBaza, moscowTime]
         );
 
         // Обновляем total_count в таблице, независимо от пользователя
