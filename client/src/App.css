@@ -121,9 +121,12 @@ button:hover {
 
 /* Services Component Styles */
 .services {
+  display: flex;
   padding: 50px 20px;
   text-align: center;
   background-color: #f8f9fa;
+  flex-direction: column;
+  align-items: center;
 }
 
 .services h2 {
@@ -135,7 +138,9 @@ button:hover {
 .service-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  gap: 20px;
+  gap: 40px;
+  justify-content: center;
+  justify-items: center;
 }
 
 .card {
