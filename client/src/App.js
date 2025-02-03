@@ -22,6 +22,7 @@ import AssignLeads from "./AssignLead";
 import MyLeads from "./MyLeads";
 import exitAccount from './exitAccount.jpg'
 import LeadsTable from "./LeadsTable";
+import "./Marquee.css";
 
 // Основной компонент приложения
 function App() {
@@ -857,8 +858,42 @@ function Apps() {
       });
   };
 
+  const [totalSubmissions, setTotalSubmissions] = useState(0); // Новое состояние для общего количества
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return;
+    }
+
+    const fetchAccountData = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/account`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = response.data;
+        setAccount(data);
+
+        // Обновляем общее количество отправок
+        setTotalSubmissions(data.total_count || 0); // Устанавливаем значение total_count
+      } catch (err) {
+        console.error("Ошибка при получении данных аккаунта:", err);
+        setError("Ошибка при загрузке данных.");
+      }
+    };
+
+    fetchAccountData();
+  }, []);
+
   return (
     <main>
+
+      <div className="marquee-container">
+        <div className="marquee" >
+          🌟 Общее количество передач команды: {totalSubmissions} 🌟
+        </div>
+      </div>
+
       <section className="py-5 text-center" style={{ backgroundColor: '#F0FFFF', }}>
         <div className="row">
           {/* Левая часть (4 колонки) с модальными окнами "ДАНЯ" */}
