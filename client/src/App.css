@@ -314,7 +314,7 @@ button:hover {
 
 .prokrutka {
   margin-top: 10px;
-  margin-left: -40px;
+  margin-left: -50px;
   padding: 20px;
   background-color: rgb(240, 255, 255);
   border-radius: 10px;
@@ -392,7 +392,7 @@ button:hover {
   }
 
   .prokrutka {
-    margin-left: -25px;
+    margin-left: -30px;
     width: 140%;
   }
 }
