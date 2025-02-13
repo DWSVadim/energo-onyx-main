@@ -103,18 +103,29 @@ const AdminPanelminus = () => {
             <div style={{ gap: "20px" }}>
                 {users.length > 0 ? (
                     <ul className="Admins">
-                        {users.map((user) => (
-                            <li key={user.id}>
-                                <img
-                                    style={{ width: "40px" }}
-                                    src="https://s6.ezgif.com/tmp/ezgif-6-0978c6aea3.gif"
-                                    alt="Sticker"
-                                />
-                                {user.name} ({user.email})
-                                <p style={{ color: "green" }}>Отправок за сегодня: <span style={{ fontSize: "20px", fontWeight: "bold" }}>{user.count}</span></p>
-                                <p>Дата последней отправки: {user.data || "—"}</p>
-                            </li>
-                        ))}
+                        {users
+                            .filter((user) => !user.name.toLowerCase().includes("holodka")) // Фильтр для скрытия
+                            .map((user) => {
+                                return (
+                                    <li
+                                        key={user.id} 
+                                    >
+                                        <img
+                                            style={{ width: "40px" }}
+                                            src="https://s6.ezgif.com/tmp/ezgif-6-0978c6aea3.gif"
+                                            alt="Sticker"
+                                        />
+                                        {user.name} ({user.email})
+                                        <p style={{ color: "green" }}>
+                                            Отправок за сегодня:{" "}
+                                            <span style={{ fontSize: "20px", fontWeight: "bold" }}>
+                                                {user.count}
+                                            </span>
+                                        </p>
+                                        <p>Дата последней отправки: {user.data || "—"}</p>
+                                    </li>
+                                );
+                            })}
                     </ul>
                 ) : (
                     !error && <p>Пользователи не найдены.</p>
