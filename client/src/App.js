@@ -839,7 +839,7 @@ function Apps() {
       })
       .then(() => {
         // После успешной отправки в БД, отправляем в Google Script
-        return fetch("https://script.google.com/macros/s/AKfycbxcmHyzHegZs-ilzEJFaxluxxONPE19ojS3Q42GPGAfplAJue1wpBI1bcDjhoAh5UbhPg/exec", {
+        return fetch("https://script.google.com/macros/s/AKfycbyVBsNZhGEqpB1hhgDXy1a7AXMNA9PtkDiH2vlAFQia6V3DeGOhTwQeFn8qDt0VPijj/exec", {
           method: "POST",
           body: new URLSearchParams(data),
           headers: {
