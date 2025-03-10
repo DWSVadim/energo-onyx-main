@@ -823,7 +823,7 @@ function Apps() {
     setLoading(true);
 
     // Сначала отправляем данные в БД
-    fetch("https://dws-energy.onrender.com/submit-form", {
+    fetch("https://energo-onyx-main.onrender.com/submit-form", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
