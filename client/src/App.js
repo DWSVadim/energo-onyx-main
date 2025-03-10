@@ -161,8 +161,15 @@ function Home() {
       ) : (
         <h1>Привет в Энергосбыте</h1>
       )}
+      <br></br>
+      <br></br>
+      <br></br>
       <p>Your trusted partner in energy management and sustainable solutions.</p>
       <Link to="/services" className="btn">Explore Our Services</Link>
+      <br></br>
+      <br></br>
+      <br></br>
+      <p>Фарту молодые, вы знаете что всё зависит только от вас!</p>
     </div>
   );
 }
@@ -229,6 +236,8 @@ function Instruction() {
   return (
     <div className="services">
       <h2>Инструкции!</h2>
+      <br></br>
+      <br></br>
       <div className="service-cards">
 
         {isAuthenticated && (role === "5" || role === "1" || role === "2" || role === "3" || role === "4") ? (
@@ -253,6 +262,8 @@ function Instruction() {
         )}
 
       </div>
+      <br></br>
+      <br></br>
     </div>
   );
 }
