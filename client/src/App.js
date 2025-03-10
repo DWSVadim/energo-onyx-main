@@ -121,7 +121,7 @@ const Header = () => {
         {isAuthenticated && (role === "1" || role === "3") ? (
           <h3>Роскомнадзор</h3>
         ) : (
-          <h3>Энергасбыт</h3>
+          <h3>Энергосбыт</h3>
         )}
         {isAuthenticated && (role === "1" || role === "3") ? (
           <img src={RKN} style={{ width: "40px" }} alt="Описание" />
