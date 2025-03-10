@@ -307,6 +307,10 @@ button:hover {
   color: #e0e0e0;
 }
 
+.account p{
+  color: #e0e0e0;
+}
+
 .account button {
   color: #e0e0e0;
   background-color: transparent;
