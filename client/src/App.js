@@ -162,7 +162,8 @@ function Home() {
         <h1>Привет в Энергосбыте</h1>
       )}
       <br></br>
-      <br></br>
+      <h2>Хочешь, что бы их деньги были твоими?)</h2>
+      <h2>Тогда ебашь, а не еблань!</h2>
       <br></br>
       <p>Your trusted partner in energy management and sustainable solutions.</p>
       <Link to="/services" className="btn">Explore Our Services</Link>
@@ -918,7 +919,7 @@ function Apps() {
         </div>
       </div>
 
-      <section className="py-5 text-center" style={{ backgroundColor: '#F0FFFF', }}>
+      <section className="py-5 text-center" style={{ backgroundColor: '#282828', }}>
         <div className="row">
           {/* Левая часть (4 колонки) с модальными окнами "ДАНЯ" */}
           <div className="col-4">
