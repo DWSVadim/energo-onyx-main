@@ -393,6 +393,9 @@ button:hover {
     grid-template-columns: repeat(3, 1fr); /* 2 колонки одинаковой ширины */
     justify-items: end;
   }
+  .prokrutka {
+    margin-left: -50px;
+  }
 }
 
 @media (max-width: 1028px) {
