@@ -1056,7 +1056,7 @@ function Apps() {
                 name="comment"
                 cols="100"
                 rows="5"
-                style={{ fontSize: "18px", backgroundColor: '#3a3a3a', color: azure }}
+                style={{ fontSize: "18px", backgroundColor: '#3a3a3a', color: "azure" }}
               />
             </div>
             <div className="d-flex justify-content-center">
