@@ -380,7 +380,7 @@ function Account() {
       <p>Имя: {account.name}</p>
       <p>Email: {account.email}</p>
       <p>Роль: {roleName}</p>
-      <p>Отправок за сегодня: {account.count}</p>
+      <p>Отправок за сегодня: {account.count} / 4</p>
       <p>Дата последней отправки: {account.data}</p>
       <button className="btn logout" onClick={handleLogout}>Выйти</button>
     </div>
@@ -915,7 +915,7 @@ function Apps() {
 
       <div className="marquee-container">
         <div className="marquee" >
-          🌟 Общее количество передач команды: {totalSubmissions} 🌟
+          🌟 Общее количество передач команды: {totalSubmissions} из 80 🌟
         </div>
       </div>
 
