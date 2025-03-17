@@ -382,7 +382,7 @@ function Account() {
       <p>Роль: {roleName}</p>
       <p>Отправок за сегодня: {account.count} / 4</p>
       <p>Дата последней отправки: {account.data}</p>
-      <button style={{fontSize: "36px"}} className="btn logout" onClick={handleLogout}>Выйти</button>
+      <button style={{fontSize: "28px", color: "red"}} className="btn logout" onClick={handleLogout}>Выйти</button>
     </div>
   );
 }
