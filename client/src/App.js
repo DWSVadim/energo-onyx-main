@@ -375,7 +375,7 @@ function Account() {
 
   return (
     <div className="account">
-      <p>Общее количество отправок: <strong>{totalSubmissions}</strong> из <strong>80</strong></p>
+      <p>Общее количество отправок: <strong>{totalSubmissions}</strong> из <strong>130</strong></p>
       <h2>Мой аккаунт</h2>
       <p>Имя: {account.name}</p>
       <p>Email: {account.email}</p>
@@ -915,7 +915,7 @@ function Apps() {
 
       <div className="marquee-container">
         <div className="marquee" >
-          🌟 Общее количество передач команды: {totalSubmissions} из 80 🌟
+          🌟 Общее количество передач команды: {totalSubmissions} из 130 🌟
         </div>
       </div>
 
