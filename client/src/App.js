@@ -119,9 +119,9 @@ const Header = () => {
           alignItems: "center",
         }}>
         {isAuthenticated && (role === "1" || role === "3") ? (
-          <h3>Роскомнадзор</h3>
+          <h3>Admin CRM</h3>
         ) : (
-          <h3>Энергосбыт</h3>
+          <h3>CRM</h3>
         )}
         {isAuthenticated && (role === "1" || role === "3") ? (
           <img src={RKN} style={{ width: "40px" }} alt="Описание" />
@@ -157,9 +157,9 @@ function Home() {
   return (
     <div className="home">
       {isAuthenticated && role === "1" ? (
-        <h1>Привет в Роскомнадзоре</h1>
+        <h1>Привет в Admin CRM</h1>
       ) : (
-        <h1>Привет в Энергосбыте</h1>
+        <h1>Привет в CRM</h1>
       )}
       <br></br>
       <h2>Хочешь, что бы их деньги были твоими?)</h2>
@@ -383,6 +383,8 @@ function Account() {
       <p>Отправок за сегодня: {account.count} / 4</p>
       <p>Дата последней отправки: {account.data}</p>
       <button style={{fontSize: "28px", color: "red"}} className="btn logout" onClick={handleLogout}>Выйти</button>
+      <br></br>
+      <span>Хочешь зарабатывать? Не читай текст, а ебашь!</span>
     </div>
   );
 }
