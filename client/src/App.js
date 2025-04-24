@@ -380,7 +380,7 @@ function Account() {
       <p>Имя: {account.name}</p>
       <p>Email: {account.email}</p>
       <p>Роль: {roleName}</p>
-      <p>Отправок за сегодня: {account.count} / 4</p>
+      <p>Отправок за сегодня: {account.count} / 6</p>
       <p>Дата последней отправки: {account.data}</p>
       <button style={{fontSize: "28px", color: "red"}} className="btn logout" onClick={handleLogout}>Выйти</button>
       <br></br>
