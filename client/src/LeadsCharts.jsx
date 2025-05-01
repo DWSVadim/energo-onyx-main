@@ -67,17 +67,17 @@ const LeadsCharts = () => {
             <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
                 Диаграммы по пользователям
             </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 place-items-center">
                 {users.map((user) => {
                     const userLeads = getLeadsByUser(user.id);
                     const leadStats = getLeadsByStatus(userLeads);
-
+    
                     return (
                         <div
                             key={user.id}
-                            className="bg-white max-w-sm w-full rounded-xl shadow-md p-4 mx-auto flex flex-col items-center"
+                            className="bg-white max-w-sm w-full rounded-xl shadow-md p-4 flex flex-col items-center text-center"
                         >
-                            <h3 className="text-lg font-semibold mb-2 text-center">{user.name}</h3>
+                            <h3 className="text-lg font-semibold mb-2">{user.name}</h3>
                             <div style={{ width: 240, height: 240 }}>
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
@@ -102,15 +102,14 @@ const LeadsCharts = () => {
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
-                            <p className="mt-4 text-sm text-gray-700 text-center">
+                            <p className="mt-4 text-sm text-gray-700">
                                 Общее количество назначенных лидов:{" "}
                                 <strong>{userLeads.length}</strong>
                             </p>
-                            <ul className="mt-2 text-sm text-gray-600 w-full">
+                            <ul className="mt-2 text-sm text-gray-600">
                                 {leadStats.map((entry) => (
-                                    <li key={entry.name} className="flex justify-between px-2">
-                                        <span>{entry.name}:</span>
-                                        <span className="font-semibold">{entry.value}</span>
+                                    <li key={entry.name}>
+                                        {entry.name}: <span className="font-semibold">{entry.value}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -119,7 +118,7 @@ const LeadsCharts = () => {
                 })}
             </div>
         </div>
-    );
+    );    
 };
 
 export default LeadsCharts;
