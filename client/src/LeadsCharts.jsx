@@ -26,8 +26,12 @@ const LeadsCharts = () => {
 
                 setUsers(filteredUsers);
                 setLeads(leadsResponse.data);
+
+                // Проверяем данные
+                console.log("Filtered Users:", filteredUsers);
+                console.log("Leads Data:", leadsResponse.data);
             } catch (err) {
-                console.error(err);
+                console.error("Error fetching data:", err);
             }
         };
 
@@ -46,10 +50,17 @@ const LeadsCharts = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {users.map((user) => {
                     const userLeads = getLeadsByUser(user.id);
+
+                    // Проверяем, что userLeads не пустой
+                    console.log(`User: ${user.name}, Leads:`, userLeads);
+
                     const leadStats = [
                         { name: "Назначенные", value: userLeads.length },
                         { name: "Неназначенные", value: leads.filter(l => !l.userId && !l.assigned_to).length },
                     ];
+
+                    // Проверяем, что в leadStats есть данные
+                    console.log(`Lead Stats for ${user.name}:`, leadStats);
 
                     return (
                         <div
@@ -57,7 +68,7 @@ const LeadsCharts = () => {
                             className="bg-white rounded-xl shadow-md p-4 flex flex-col items-center"
                         >
                             <h3 className="text-lg font-semibold mb-2 text-center">{user.name}</h3>
-                            <div className="w-48 h-48">
+                            <div style={{ width: 300, height: 300 }}>
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
