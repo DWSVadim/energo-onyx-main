@@ -39,7 +39,7 @@ const LeadsCharts = () => {
 
     // Группируем лидов по userId
     const getLeadsByUser = (userId) =>
-        leads.filter((lead) => lead.userId === userId);
+        leads.filter((lead) => lead.assigned_to !== null && lead.assigned_to === userId);    
 
     // Группируем лидов по статусу
     const getLeadsByStatus = (userLeads) => {
