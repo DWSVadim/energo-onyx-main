@@ -13,8 +13,15 @@ const AssignLeads = () => {
             try {
                 const leadsResponse = await api.get("/leads");
                 const usersResponse = await api.get("/admin/users");
-                setLeads(leadsResponse.data);
-                setUsers(usersResponse.data);
+
+                // Отфильтровать лидов без назначенного пользователя
+                const unassignedLeads = leadsResponse.data.filter((lead) => !lead.userId && !lead.assigned);
+
+                // Отфильтровать пользователей с isAdmin === 4
+                const filteredUsers = usersResponse.data.filter((user) => user.isAdmin === 4);
+
+                setLeads(unassignedLeads);
+                setUsers(filteredUsers);
             } catch (err) {
                 console.error(err);
             }
@@ -31,6 +38,11 @@ const AssignLeads = () => {
                 userId: selectedUser,
             });
             setMessage(response.data.message);
+
+            // После успешного назначения убрать лида из списка
+            setLeads((prev) => prev.filter((lead) => lead.id !== selectedLead));
+            setSelectedLead("");
+            setSelectedUser("");
         } catch (err) {
             console.error(err);
             setMessage("Ошибка назначения лида");
