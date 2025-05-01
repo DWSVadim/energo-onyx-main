@@ -15,7 +15,7 @@ const AssignLeads = () => {
                 const usersResponse = await api.get("/admin/users");
 
                 // Отфильтровать лидов без назначенного пользователя
-                const unassignedLeads = leadsResponse.data.filter((lead) => !lead.userId && !lead.assigned);
+                const unassignedLeads = leadsResponse.data.filter((lead) => !lead.userId && !lead.assigned_to);
 
                 // Отфильтровать пользователей с isAdmin === 4
                 const filteredUsers = usersResponse.data.filter((user) => user.isAdmin === 4);
