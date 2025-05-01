@@ -67,7 +67,7 @@ const LeadsCharts = () => {
             <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
                 Диаграммы по пользователям
             </h1>
-            <div className="grid grid-cols-2 gap-6 place-items-center">
+            <div style={{ display: "flex", flexDirection: "collum", alignItems: 'center' }}>
                 {users.map((user) => {
                     const userLeads = getLeadsByUser(user.id);
                     const leadStats = getLeadsByStatus(userLeads);
