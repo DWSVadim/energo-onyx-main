@@ -22,6 +22,7 @@ import AssignLeads from "./AssignLead";
 import MyLeads from "./MyLeads";
 import exitAccount from './exitAccount.jpg'
 import LeadsTable from "./LeadsTable";
+import LeadsCharts from "./LeadsCharts";
 import "./Marquee.css";
 
 // Основной компонент приложения
@@ -35,6 +36,7 @@ function App() {
         <div className="app">
           <Header />  {/* Хедер теперь использует данные из контекста */}
           <Routes>
+            <Route path="/leadscharts" element={<LeadsCharts />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
@@ -138,6 +140,11 @@ const Header = () => {
         {isAuthenticated && role === "2" && <Link to="/adminminus">Проверка передач</Link>}  {/* Проверка передач */}
         {isAuthenticated && role === "1" && <Link to="/admin">Админ Панель</Link>}  {/* Панель администратора */}
         {isAuthenticated && role === "5" &&<Link to="/dopinfo">Адреса</Link>}
+        
+        {isAuthenticated && (role === "1" || role === "2") && (
+    <Link to="/leadscharts">Статистика Госов</Link>
+)}
+
         <button className="btn logout" style={{ color: "red" }} onClick={handleLogout}>Выйти</button>
       </nav>
     </header>
