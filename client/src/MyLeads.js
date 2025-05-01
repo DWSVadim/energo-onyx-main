@@ -35,7 +35,7 @@ const MyLeads = () => {
         }
     };
 
-    // 🔍 Подсчёт количества по статусам
+    // Подсчёт количества по статусам
     const statusCounts = leads.reduce((acc, lead) => {
         const status = lead.status || "Без статуса";
         acc[status] = (acc[status] || 0) + 1;
@@ -47,13 +47,20 @@ const MyLeads = () => {
         value: count
     }));
 
-    const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#a0a0a0"];
+    // Цвета по статусам
+    const COLORS = {
+        "Взял": "#4CAF50",        // зелёный
+        "Слив": "#00BCD4",        // класный (бирюзовый)
+        "Перезвон": "#2196F3",    // синий
+        "Недозвон": "#9E9E9E",    // серый
+        "Без статуса": "#E0E0E0"  // по умолчанию
+    };
 
     return (
         <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
             <h2 style={{ textAlign: "center", color: "#333" }}>Leads</h2>
 
-            {/* 📊 Диаграмма */}
+            {/* Диаграмма */}
             <div style={{ width: "100%", height: 300 }}>
                 <ResponsiveContainer>
                     <PieChart>
@@ -67,7 +74,10 @@ const MyLeads = () => {
                             label
                         >
                             {chartData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[entry.name] || "#CCCCCC"}
+                                />
                             ))}
                         </Pie>
                         <Tooltip />
@@ -76,7 +86,7 @@ const MyLeads = () => {
                 </ResponsiveContainer>
             </div>
 
-            {/* 🧾 Таблица */}
+            {/* Таблица */}
             <table style={{
                 width: "100%",
                 borderCollapse: "collapse",
