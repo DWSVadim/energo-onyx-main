@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import api from "./utils/api";
+import {
+    PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer
+} from "recharts";
 
 const MyLeads = () => {
     const [leads, setLeads] = useState([]);
@@ -32,9 +35,48 @@ const MyLeads = () => {
         }
     };
 
+    // 🔍 Подсчёт количества по статусам
+    const statusCounts = leads.reduce((acc, lead) => {
+        const status = lead.status || "Без статуса";
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
+    }, {});
+
+    const chartData = Object.entries(statusCounts).map(([status, count]) => ({
+        name: status,
+        value: count
+    }));
+
+    const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#a0a0a0"];
+
     return (
         <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
             <h2 style={{ textAlign: "center", color: "#333" }}>Leads</h2>
+
+            {/* 📊 Диаграмма */}
+            <div style={{ width: "100%", height: 300 }}>
+                <ResponsiveContainer>
+                    <PieChart>
+                        <Pie
+                            data={chartData}
+                            dataKey="value"
+                            nameKey="name"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={100}
+                            label
+                        >
+                            {chartData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
+
+            {/* 🧾 Таблица */}
             <table style={{
                 width: "100%",
                 borderCollapse: "collapse",
