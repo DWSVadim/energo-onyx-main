@@ -86,8 +86,8 @@ const MyLeads = () => {
                 </ResponsiveContainer>
             </div>
 
-            <p style={{ marginTop: "20px", fontWeight: "bold", color: "#333" }}>
-    Общее количество лидов: {leads.length}
+            <p style={{ marginTop: "24px", fontWeight: "bold", color: "#333", display: 'flex', justifyContent: 'center'}}>
+                Общее количество лидов: {leads.length}
             </p>
 
             {/* Таблица */}
