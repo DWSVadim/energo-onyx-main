@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "./utils/api";
-import {
-    PieChart,
-    Pie,
-    Cell,
-    Tooltip,
-    ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const COLORS = {
     "Взял": "#4CAF50",        // зелёный
@@ -33,7 +27,6 @@ const LeadsCharts = () => {
                 setUsers(filteredUsers);
                 setLeads(leadsResponse.data);
 
-                // Проверяем данные
                 console.log("Filtered Users:", filteredUsers);
                 console.log("Leads Data:", leadsResponse.data);
             } catch (err) {
@@ -80,9 +73,6 @@ const LeadsCharts = () => {
                 {users.map((user) => {
                     const userLeads = getLeadsByUser(user.id);
                     const leadStats = getLeadsByStatus(userLeads);
-
-                    // Проверяем, что в leadStats есть данные
-                    console.log(`Lead Stats for ${user.name}:`, leadStats);
 
                     return (
                         <div
