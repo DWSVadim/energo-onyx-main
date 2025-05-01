@@ -8,7 +8,13 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-const COLORS = ["#34D399", "#60A5FA", "#FBBF24", "#F87171"];
+const COLORS = {
+    "Взял": "#4CAF50",        // зелёный
+    "Слив": "#F44336",        // красный
+    "Перезвон": "#2196F3",    // синий
+    "Недозвон": "#9E9E9E",    // серый
+    "Без статуса": "#E0E0E0", // по умолчанию
+};
 
 const LeadsCharts = () => {
     const [users, setUsers] = useState([]);
@@ -42,6 +48,29 @@ const LeadsCharts = () => {
     const getLeadsByUser = (userId) =>
         leads.filter((lead) => lead.userId === userId);
 
+    // Группируем лидов по статусу
+    const getLeadsByStatus = (userLeads) => {
+        const stats = {
+            "Взял": 0,
+            "Слив": 0,
+            "Перезвон": 0,
+            "Недозвон": 0,
+            "Без статуса": 0,
+        };
+
+        userLeads.forEach((lead) => {
+            const status = lead.status || "Без статуса";
+            if (stats[status] !== undefined) {
+                stats[status]++;
+            }
+        });
+
+        return Object.entries(stats).map(([name, value]) => ({
+            name,
+            value,
+        }));
+    };
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
@@ -50,14 +79,7 @@ const LeadsCharts = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {users.map((user) => {
                     const userLeads = getLeadsByUser(user.id);
-
-                    // Проверяем, что userLeads не пустой
-                    console.log(`User: ${user.name}, Leads:`, userLeads);
-
-                    const leadStats = [
-                        { name: "Назначенные", value: userLeads.length },
-                        { name: "Неназначенные", value: leads.filter(l => !l.userId && !l.assigned_to).length },
-                    ];
+                    const leadStats = getLeadsByStatus(userLeads);
 
                     // Проверяем, что в leadStats есть данные
                     console.log(`Lead Stats for ${user.name}:`, leadStats);
@@ -81,8 +103,11 @@ const LeadsCharts = () => {
                                             fill="#8884d8"
                                             label
                                         >
-                                            {leadStats.map((_, index) => (
-                                                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                                            {leadStats.map((entry, index) => (
+                                                <Cell
+                                                    key={index}
+                                                    fill={COLORS[entry.name] || "#E0E0E0"}
+                                                />
                                             ))}
                                         </Pie>
                                         <Tooltip />
