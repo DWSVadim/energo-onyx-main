@@ -67,18 +67,18 @@ const LeadsCharts = () => {
             <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
                 Диаграммы по пользователям
             </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 place-items-center">
+            <div className="grid grid-cols-2 gap-6 place-items-center">
                 {users.map((user) => {
                     const userLeads = getLeadsByUser(user.id);
                     const leadStats = getLeadsByStatus(userLeads);
-    
+
                     return (
                         <div
                             key={user.id}
                             className="bg-white max-w-sm w-full rounded-xl shadow-md p-4 flex flex-col items-center text-center"
                         >
                             <h3 className="text-lg font-semibold mb-2">{user.name}</h3>
-                            <div style={{ width: 240, height: 240 }}>
+                            <div className="flex justify-center items-center" style={{ width: 240, height: 240 }}>
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
@@ -118,7 +118,7 @@ const LeadsCharts = () => {
                 })}
             </div>
         </div>
-    );    
+    );
 };
 
 export default LeadsCharts;
