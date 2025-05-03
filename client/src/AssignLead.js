@@ -3,10 +3,12 @@ import api from "./utils/api";
 
 const AssignLeads = () => {
     const [leads, setLeads] = useState([]);
+    const [assignedLeads, setAssignedLeads] = useState([]);
     const [users, setUsers] = useState([]);
     const [selectedLead, setSelectedLead] = useState("");
     const [selectedUser, setSelectedUser] = useState("");
     const [message, setMessage] = useState("");
+    const [sortBy, setSortBy] = useState("date"); // "date" | "status"
 
     useEffect(() => {
         const fetchData = async () => {
@@ -17,11 +19,15 @@ const AssignLeads = () => {
                 const unassignedLeads = leadsResponse.data.filter(
                     (lead) => !lead.userId && !lead.assigned_to
                 );
+                const assigned = leadsResponse.data.filter(
+                    (lead) => lead.userId || lead.assigned_to
+                );
                 const filteredUsers = usersResponse.data.filter(
                     (user) => user.isAdmin === 4
                 );
 
                 setLeads(unassignedLeads);
+                setAssignedLeads(assigned);
                 setUsers(filteredUsers);
             } catch (err) {
                 console.error(err);
@@ -35,35 +41,43 @@ const AssignLeads = () => {
             alert("Выберите лида и пользователя");
             return;
         }
-    
+
         try {
             const response = await api.post("/leads/assign", {
                 leadId: Number(selectedLead),
                 userId: Number(selectedUser),
             });
             setMessage(response.data.message);
-    
-            // Удалить назначенного лида из списка
+
             setLeads((prevLeads) =>
                 prevLeads.filter((lead) => lead.id !== Number(selectedLead))
             );
-    
-            // Очистить выбор
+
+            const assignedLead = leads.find(lead => lead.id === Number(selectedLead));
+            if (assignedLead) {
+                setAssignedLeads((prev) => [...prev, { ...assignedLead, userId: Number(selectedUser) }]);
+            }
+
             setSelectedLead("");
             setSelectedUser("");
-    
-            // Очистить сообщение через 3 секунды
+
             setTimeout(() => setMessage(""), 3000);
         } catch (err) {
             console.error(err);
             setMessage("Ошибка назначения лида");
             setTimeout(() => setMessage(""), 3000);
         }
-    };    
+    };
+
+    const sortedLeads = [...assignedLeads].sort((a, b) => {
+        if (sortBy === "date") return new Date(b.createdAt) - new Date(a.createdAt);
+        if (sortBy === "status") return (a.status || "").localeCompare(b.status || "");
+        return 0;
+    });
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
+        <div className="flex flex-col items-center min-h-screen bg-gray-100 py-10 px-4">
+            <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md mb-10">
                 <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
                     Назначение лидов
                 </h2>
@@ -108,6 +122,68 @@ const AssignLeads = () => {
                         {message}
                     </p>
                 )}
+            </div>
+
+            <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-3xl">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Назначенные лиды</h3>
+                    <select
+                        className="border p-1 rounded"
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                    >
+                        <option value="date">Сортировать по дате</option>
+                        <option value="status">Сортировать по статусу</option>
+                    </select>
+                </div>
+                <ul className="space-y-4 max-h-[500px] overflow-y-auto">
+                    {sortedLeads.map((lead) => (
+                        <li key={lead.id} className="p-4 border rounded-lg bg-gray-50">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <p className="font-medium">{lead.fio} ({lead.phone})</p>
+                                    <p className="text-sm text-gray-500">Статус: {lead.status || "не указан"}</p>
+                                    <p className="text-sm text-gray-500">
+                                        Назначен: {users.find((u) => u.id === lead.userId)?.name || "неизвестно"}
+                                    </p>
+                                </div>
+                                <select
+                                    className="p-1 border rounded"
+                                    defaultValue={lead.userId}
+                                    onChange={async (e) => {
+                                        const newUserId = Number(e.target.value);
+                                        try {
+                                            await api.post("/leads/assign", {
+                                                leadId: lead.id,
+                                                userId: newUserId,
+                                            });
+                                            setAssignedLeads((prev) =>
+                                                prev.map((l) =>
+                                                    l.id === lead.id
+                                                        ? { ...l, userId: newUserId }
+                                                        : l
+                                                )
+                                            );
+                                            setMessage("Лид переназначен");
+                                            setTimeout(() => setMessage(""), 3000);
+                                        } catch (err) {
+                                            console.error(err);
+                                            setMessage("Ошибка переназначения");
+                                            setTimeout(() => setMessage(""), 3000);
+                                        }
+                                    }}
+                                >
+                                    <option value="">Выбрать другого</option>
+                                    {users.map((user) => (
+                                        <option key={user.id} value={user.id}>
+                                            {user.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     );
