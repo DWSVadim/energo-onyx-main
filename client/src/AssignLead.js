@@ -171,8 +171,13 @@ const AssignLeads = () => {
                                     <p className="font-medium">{lead.fio} ({lead.phone})</p>
                                     <p className="text-sm text-gray-500">Статус: {lead.status || "не указан"}</p>
                                     <p className="text-sm text-gray-500">
-                                    Назначен: {users.find((user) => Number(user.id) === Number(lead.userId))?.name || "неизвестно"}
+                                        Назначен: {
+                                            users.find((user) =>
+                                                Number(user.id) === Number(lead.userId || lead.assigned_to)
+                                            )?.name || "неизвестно"
+                                        }
                                     </p>
+
                                     <p className="text-sm text-gray-500">
                                         Дата: {lead.submission_date}
                                     </p>
