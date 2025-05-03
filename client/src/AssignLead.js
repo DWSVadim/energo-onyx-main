@@ -69,9 +69,16 @@ const AssignLeads = () => {
         }
     };
 
+    const parseSubmissionDate = (str) => {
+        const [datePart] = str.split(" ");
+        const [day, month, year] = datePart.split("-");
+        return new Date(`${year}-${month}-${day}`);
+    };
+
     const filteredLeads = assignedLeads.filter((lead) => {
+        const dateValid = lead.submission_date && !isNaN(parseSubmissionDate(lead.submission_date));
         const dateMatch = filterDate
-            ? new Date(lead.createdAt).toISOString().split("T")[0] === filterDate
+            ? dateValid && parseSubmissionDate(lead.submission_date).toISOString().split("T")[0] === filterDate
             : true;
 
         const statusMatch = filterStatus ? lead.status === filterStatus : true;
@@ -164,10 +171,10 @@ const AssignLeads = () => {
                                     <p className="font-medium">{lead.fio} ({lead.phone})</p>
                                     <p className="text-sm text-gray-500">Статус: {lead.status || "не указан"}</p>
                                     <p className="text-sm text-gray-500">
-                                        Назначен: {users.find((u) => u.id === lead.userId)?.name || "неизвестно"}
+                                        Назначен: {users.find((user) => user.id === lead.userId)?.name || "неизвестно"}
                                     </p>
                                     <p className="text-sm text-gray-500">
-                                        Дата: {new Date(lead.createdAt).toLocaleDateString()}
+                                        Дата: {lead.submission_date}
                                     </p>
                                 </div>
                                 <select
