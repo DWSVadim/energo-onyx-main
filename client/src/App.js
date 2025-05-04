@@ -353,7 +353,7 @@ function Account() {
         return "Админ";
       case 2:
         return "Модератор";
-      case 3:
+      case 4:
         return "Госы";
       default:
         return "Пользователь";
