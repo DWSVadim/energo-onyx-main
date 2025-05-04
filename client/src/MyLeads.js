@@ -6,6 +6,8 @@ import {
 
 const MyLeads = () => {
     const [leads, setLeads] = useState([]);
+    const [filterDate, setFilterDate] = useState("");
+    const [filterStatus, setFilterStatus] = useState("");
 
     useEffect(() => {
         const fetchLeads = async () => {
@@ -35,8 +37,24 @@ const MyLeads = () => {
         }
     };
 
-    // Подсчёт количества по статусам
-    const statusCounts = leads.reduce((acc, lead) => {
+    const parseSubmissionDate = (str) => {
+        const [datePart] = str.split(" ");
+        const [day, month, year] = datePart.split("-");
+        return new Date(`${year}-${month}-${day}`);
+    };
+
+    const filteredLeads = leads.filter((lead) => {
+        const dateValid = lead.submission_date && !isNaN(parseSubmissionDate(lead.submission_date));
+        const dateMatch = filterDate
+            ? dateValid && parseSubmissionDate(lead.submission_date).toISOString().split("T")[0] === filterDate
+            : true;
+
+        const statusMatch = filterStatus ? lead.status === filterStatus : true;
+
+        return dateMatch && statusMatch;
+    });
+
+    const statusCounts = filteredLeads.reduce((acc, lead) => {
         const status = lead.status || "Без статуса";
         acc[status] = (acc[status] || 0) + 1;
         return acc;
@@ -47,18 +65,38 @@ const MyLeads = () => {
         value: count
     }));
 
-    // Цвета по статусам
     const COLORS = {
-        "Взял": "#4CAF50",        // зелёный
-        "Слив": "#F44336",        // красный
-        "Перезвон": "#2196F3",    // синий
-        "Недозвон": "#9E9E9E",    // серый
-        "Без статуса": "#E0E0E0"  // по умолчанию
+        "Взял": "#4CAF50",
+        "Слив": "#F44336",
+        "Перезвон": "#2196F3",
+        "Недозвон": "#9E9E9E",
+        "Без статуса": "#E0E0E0"
     };
 
     return (
         <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
             <h2 style={{ textAlign: "center", color: "#333" }}>Leads</h2>
+
+            {/* Фильтрация */}
+            <div style={{ marginBottom: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
+                <input
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                    style={{ padding: "5px", borderRadius: "4px", border: "1px solid #ccc" }}
+                />
+                <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    style={{ padding: "5px", borderRadius: "4px", border: "1px solid #ccc" }}
+                >
+                    <option value="">Все статусы</option>
+                    <option value="Недозвон">Недозвон</option>
+                    <option value="Слив">Слив</option>
+                    <option value="Перезвон">Перезвон</option>
+                    <option value="Взял">Взял</option>
+                </select>
+            </div>
 
             {/* Диаграмма */}
             <div style={{ width: "100%", height: 300 }}>
@@ -86,8 +124,8 @@ const MyLeads = () => {
                 </ResponsiveContainer>
             </div>
 
-            <p style={{ marginTop: "24px", fontWeight: "bold", color: "#333", display: 'flex', justifyContent: 'center'}}>
-                Общее количество лидов: {leads.length}
+            <p style={{ marginTop: "24px", fontWeight: "bold", color: "#333", display: 'flex', justifyContent: 'center' }}>
+                Общее количество лидов: {filteredLeads.length}
             </p>
 
             {/* Таблица */}
@@ -127,7 +165,7 @@ const MyLeads = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {leads.map((lead, index) => (
+                    {filteredLeads.map((lead, index) => (
                         <tr
                             key={index}
                             style={{
@@ -163,9 +201,7 @@ const MyLeads = () => {
                                         color: "#333",
                                     }}
                                 >
-                                    <option value="" disabled>
-                                        Выберите статус
-                                    </option>
+                                    <option value="" disabled>Выберите статус</option>
                                     <option value="Недозвон">Недозвон</option>
                                     <option value="Слив">Слив</option>
                                     <option value="Перезвон">Перезвон</option>
