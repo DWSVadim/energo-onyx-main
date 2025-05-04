@@ -46,13 +46,13 @@ function App() {
             <Route path="/apps" element={isAuthenticated && role === "5" ? <Apps /> : <Navigate to="/" />} />
             <Route path="/instruction" element={<Instruction />} />
             <Route path="/account" element={<Account totalSubmissions={totalSubmissions} />} />
-            <Route path="/dopinfo" element={isAuthenticated && role === "5" ?<DopInfo /> : <Navigate to="/" />} />
+            <Route path="/dopinfo" element={isAuthenticated && role === "5" ? <DopInfo /> : <Navigate to="/" />} />
             <Route path="/upload" element={<UploadLeads />} />
             <Route path="/assign" element={<AssignLeads />} />
             <Route path="/my-leads" element={<MyLeads />} />
             <Route path="/leadstable" element={<LeadsTable />} />
           </Routes>
-        </div> 
+        </div>
         <Footer />
       </Router>
     </AuthProvider>
@@ -136,14 +136,20 @@ const Header = () => {
         <Link to="/services">Сервисы</Link>
         <Link to="/instruction">Инструкция</Link>
         <Link to="/account">Мой Аккаунт</Link>
+
+        {isAuthenticated && (role === "1" || role === "2") && (
+          <Link to="/assign">Назначение</Link>
+        )}
+
+        {isAuthenticated && role === "4" && <Link to="/my-leads">Панель Госа</Link>}
         {isAuthenticated && role === "5" && <Link to="/apps">Панель Пользователя</Link>}
         {isAuthenticated && role === "2" && <Link to="/adminminus">Проверка передач</Link>}  {/* Проверка передач */}
         {isAuthenticated && role === "1" && <Link to="/admin">Админ Панель</Link>}  {/* Панель администратора */}
-        {isAuthenticated && role === "5" &&<Link to="/dopinfo">Адреса</Link>}
-        
+        {isAuthenticated && role === "5" && <Link to="/dopinfo">Адреса</Link>}
+
         {isAuthenticated && (role === "1" || role === "2") && (
-    <Link to="/leadscharts">Статистика Госов</Link>
-)}
+          <Link to="/leadscharts">Статистика Госов</Link>
+        )}
 
         <button className="btn logout" style={{ color: "red" }} onClick={handleLogout}>Выйти</button>
       </nav>
@@ -389,7 +395,7 @@ function Account() {
       <p>Роль: {roleName}</p>
       <p>Отправок за сегодня: {account.count} / 6</p>
       <p>Дата последней отправки: {account.data}</p>
-      <button style={{fontSize: "28px", color: "red"}} className="btn logout" onClick={handleLogout}>Выйти</button>
+      <button style={{ fontSize: "28px", color: "red" }} className="btn logout" onClick={handleLogout}>Выйти</button>
       <br></br>
       <span>Хочешь зарабатывать? Не читай текст, а ебашь!</span>
     </div>
@@ -737,8 +743,8 @@ function Apps() {
       content: (
         <>
           -В низу есть панель: главная, услуги, платежи, документы. Выбираете раздел документы в правом нижнем углу
-            далее первый пункт личные документы
-            И там сразу будет паспорт, ниже снилс , ниже инн
+          далее первый пункт личные документы
+          И там сразу будет паспорт, ниже снилс , ниже инн
         </>
       )
     },
@@ -1091,7 +1097,7 @@ function Apps() {
                 <p>(Если человек говорит у меня новый счётчик (недавно менял))</p>
                 <p>В любом случае если система энергосбыта выдала ваш номер это означает что у вас счётчик нового образца но с немецким чипом, который необходимо заменить на оттечественный в связи с санкциями.</p>
 
-                <p style={{color: "red"}}>Давайте подберём день и время когда будет удобно принять мастера.</p>
+                <p style={{ color: "red" }}>Давайте подберём день и время когда будет удобно принять мастера.</p>
 
                 <p>-Хорошо, в таком случае возьмите ручку и листочек и запишите имя вашего мастера, который будет вам устанавливать счётчик, и номер нового счётчика.</p>
 
