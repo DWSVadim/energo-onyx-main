@@ -92,18 +92,20 @@ export const deleteUser = async (id) => {
 };
 
 // utils/api.js
-export const updateUser = async (userId, userData, token) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/users/${userId}`, {
+export const updateUser = async (id, userData) => {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(userData),
     });
-    if (!response.ok) {
-        throw new Error("Failed to update user");
-    }
+
+    if (!response.ok) throw new Error("Failed to update user");
+
     return response.json();
 };
 
