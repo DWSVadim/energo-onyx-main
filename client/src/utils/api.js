@@ -92,21 +92,14 @@ export const deleteUser = async (id) => {
 };
 
 // utils/api.js
-export const updateUser = async (id, userData) => {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(userData),
-    });
-
-    if (!response.ok) throw new Error("Failed to update user");
-
-    return response.json();
+export const updateUser = async (userId, userData) => {
+    try {
+        const response = await api.put(`/users/${userId}`, userData);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при обновлении пользователя:", error.response?.data || error.message);
+        throw new Error(error.response?.data?.error || "Ошибка обновления пользователя");
+    }
 };
 
 // Обнуление количества отправок
