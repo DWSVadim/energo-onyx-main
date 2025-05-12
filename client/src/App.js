@@ -724,11 +724,7 @@ function Apps() {
       })
       .then(() => {
         // После успешной отправки в БД, отправляем в Google Script
-<<<<<<< HEAD
-        return fetch("https://script.google.com/macros/s/AKfycbye6112cGSJCmtrKc5BEfylmdvNvxT4X_1zlJv6xgMpXYPyskuK7_2s681_VFQBVTcX/exec", {
-=======
         return fetch("https://script.google.com/macros/s/AKfycbxTn2pPHu1ZP8dtu2Dztx-ImZtwoZYtBRYtN2js5aPCX9NGrtG6uMIlKjyRzGSFVlyc/exec", {
->>>>>>> bafdc4a (12 05)
           method: "POST",
           body: new URLSearchParams(data),
           headers: {
